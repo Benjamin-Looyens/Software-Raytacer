@@ -11,8 +11,21 @@ namespace dae
 		//SPHERE HIT-TESTS
 		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W1
-			throw std::runtime_error("Not Implemented Yet");
+			float a = Vector3::Dot(ray.direction, ray.direction);
+			float b = Vector3::Dot(2 * ray.direction, (ray.origin, sphere.origin));
+			
+			Vector3 oriRayToOriSphere = (ray.origin - sphere.origin);
+
+			float c = Vector3::Dot(oriRayToOriSphere, oriRayToOriSphere) - (sphere.radius * sphere.radius);
+
+			if ((b * b) - 4 * (a * c) > 0) {
+				// TODO : Calculate if point is within tMax and tMin, if so return true, else not
+				// TODO : Add the intersection point to the hitRecord
+				hitRecord.didHit = true;
+				hitRecord.materialIndex = sphere.materialIndex;
+				return true;
+			}
+
 			return false;
 		}
 

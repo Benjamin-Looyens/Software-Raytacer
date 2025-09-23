@@ -28,6 +28,7 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 
 	const float aspectRatio = static_cast<float>(m_Width) / static_cast<float>(m_Height);
+	const Vector3 origin{ 0, 0, 0 };
 
 	for (int px{}; px < m_Width; ++px) {
 		for (int py{}; py < m_Height; ++py) {
@@ -36,10 +37,17 @@ void Renderer::Render(Scene* pScene) const
 
 			const Vector3 rayDir{ xNDC, yNDC, 1.0f };
 			const Vector3 rayDir_Normal = rayDir.Normalized();
-			const Vector3 origin{ 0, 0, 0 };
+
 			Ray hitRay{ origin, rayDir_Normal };
-			
-			ColorRGB finalColor{ rayDir_Normal.x, rayDir_Normal.y, rayDir_Normal.z };
+			ColorRGB finalColor{ };
+			HitRecord latestHit{ }; 
+			Sphere testSphere{ { 0.0f, 0.0f, 100.0f }, 50.0f, 0 };
+
+			GeometryUtils::HitTest_Sphere(testSphere, hitRay, latestHit);
+
+			if (latestHit.didHit) {
+				finalColor = materials[latestHit.materialIndex]->Shade();
+			}
 
 			//Update Color in Buffer
 			finalColor.MaxToOne();
