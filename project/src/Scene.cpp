@@ -35,7 +35,13 @@ namespace dae {
 			if (curHit.t < closestHit.t) closestHit = curHit;
 		}
 
-		// TODO : Plane hitcheck
+		for (const Plane& plane : m_PlaneGeometries) {
+			HitRecord curHit{};
+			GeometryUtils::HitTest_Plane(plane, ray, curHit);
+
+			if (curHit.t < closestHit.t) closestHit = curHit;
+		}
+
 		// TODO : Triangle hitcheck
 	}
 

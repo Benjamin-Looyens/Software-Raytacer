@@ -26,6 +26,7 @@ namespace dae
 
 				const float t0 = (-b - sqrtDiscriminant) / (2 * a);
 
+				// TODO : add HitRecord normal
 				if (t0 > ray.min) {
 					if (t0 < ray.max) {
 						curHit.t = t0;
@@ -58,10 +59,19 @@ namespace dae
 #pragma endregion
 #pragma region Plane HitTest
 		//PLANE HIT-TESTS
-		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
+		inline bool HitTest_Plane(const Plane& plane, const Ray& ray, HitRecord& curHit, bool ignoreHitRecord = false)
 		{
-			//todo W1
-			throw std::runtime_error("Not Implemented Yet");
+			const Vector3 rayToPlane = plane.origin - ray.origin;
+			const float t = Vector3::Dot(rayToPlane, plane.normal) / Vector3::Dot(ray.direction, plane.normal);
+
+			if (t > ray.min && t < ray.max) {
+				// TODO : add HitRecord normal
+				curHit.t = t;
+				curHit.didHit = true;
+				curHit.materialIndex = plane.materialIndex;
+				curHit.origin = ray.origin + (t * ray.direction);
+			}
+
 			return false;
 		}
 
