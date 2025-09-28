@@ -9,21 +9,42 @@ namespace dae
 	{
 #pragma region Sphere HitTest
 		//SPHERE HIT-TESTS
-		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
+		inline bool HitTest_Sphere(const Sphere& sphere, const Ray& ray, HitRecord& curHit, bool ignoreHitRecord = false)
 		{
-			float a = Vector3::Dot(ray.direction, ray.direction);
-			float b = Vector3::Dot(2 * ray.direction, (ray.origin, sphere.origin));
+			const float a = Vector3::Dot(ray.direction, ray.direction);
+			const float b = 2 * Vector3::Dot(ray.direction, (ray.origin - sphere.origin));
 			
-			Vector3 oriRayToOriSphere = (ray.origin - sphere.origin);
+			const Vector3 sphereToRay = (ray.origin - sphere.origin);
 
-			float c = Vector3::Dot(oriRayToOriSphere, oriRayToOriSphere) - (sphere.radius * sphere.radius);
+			const float c = Vector3::Dot(sphereToRay, sphereToRay) - (sphere.radius * sphere.radius);
+			const float discriminant = (b * b) - 4 * (a * c);
 
-			if ((b * b) - 4 * (a * c) > 0) {
-				// TODO : Calculate if point is within tMax and tMin, if so return true, else not
-				// TODO : Add the intersection point to the hitRecord
-				hitRecord.didHit = true;
-				hitRecord.materialIndex = sphere.materialIndex;
-				return true;
+
+			if (discriminant > 0) {
+				// TODO : Double check the intersection point & t
+				const float sqrtDiscriminant = sqrtf(discriminant);
+
+				const float t0 = (-b - sqrtDiscriminant) / (2 * a);
+
+				if (t0 > ray.min) {
+					if (t0 < ray.max) {
+						curHit.t = t0;
+						curHit.didHit = true;
+						curHit.materialIndex = sphere.materialIndex;
+						curHit.origin = ray.origin + (t0 * ray.direction);
+						return true;
+					}
+				}
+				else {
+					const float t1 = (-b + sqrtDiscriminant) / (2 * a);
+					if (t1 > ray.min && t1 < ray.max) {
+						curHit.t = t1;
+						curHit.didHit = true;
+						curHit.materialIndex = sphere.materialIndex;
+						curHit.origin = ray.origin + (t1 * ray.direction);
+						return true;
+					}
+				}
 			}
 
 			return false;
