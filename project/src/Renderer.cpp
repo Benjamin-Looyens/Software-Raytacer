@@ -38,17 +38,14 @@ void Renderer::Render(Scene* pScene) const
 			const Vector3 rayDir{ xNDC, yNDC, 1.0f };
 			const Vector3 rayDir_Normal = rayDir.Normalized();
 
-			Ray hitRay{ origin, rayDir_Normal };
+			Ray viewRay{ origin, rayDir_Normal };
 			ColorRGB finalColor{ };
 			HitRecord latestHit{ }; 
-			Sphere testSphere{ { 0.0f, 0.0f, 100.0f }, 50.0f, 0 };
 
-			GeometryUtils::HitTest_Sphere(testSphere, hitRay, latestHit);
+			pScene->GetClosestHit(viewRay, latestHit);
 
 			if (latestHit.didHit) {
-				//finalColor = materials[latestHit.materialIndex]->Shade();
-				const float t_scaled = (latestHit.t - 50.0f) / 40.0f;
-				finalColor = { t_scaled, t_scaled, t_scaled };
+				finalColor = materials[latestHit.materialIndex]->Shade();
 			}
 
 			//Update Color in Buffer
