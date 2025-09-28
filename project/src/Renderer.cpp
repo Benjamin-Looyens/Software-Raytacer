@@ -46,7 +46,9 @@ void Renderer::Render(Scene* pScene) const
 			GeometryUtils::HitTest_Sphere(testSphere, hitRay, latestHit);
 
 			if (latestHit.didHit) {
-				finalColor = materials[latestHit.materialIndex]->Shade();
+				//finalColor = materials[latestHit.materialIndex]->Shade();
+				const float t_scaled = (latestHit.t - 50.0f) / 40.0f;
+				finalColor = { t_scaled, t_scaled, t_scaled };
 			}
 
 			//Update Color in Buffer
