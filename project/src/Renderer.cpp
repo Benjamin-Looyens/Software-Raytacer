@@ -28,7 +28,6 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 
 	const float aspectRatio = static_cast<float>(m_Width) / static_cast<float>(m_Height);
-	const Vector3 origin{ 0, 0, 0 };
 
 	for (int px{}; px < m_Width; ++px) {
 		for (int py{}; py < m_Height; ++py) {
@@ -38,7 +37,7 @@ void Renderer::Render(Scene* pScene) const
 			const Vector3 rayDir{ xNDC, yNDC, 1.0f };
 			const Vector3 rayDir_Normal = rayDir.Normalized();
 
-			Ray viewRay{ origin, rayDir_Normal };
+			Ray viewRay{ camera.origin, rayDir_Normal };
 			ColorRGB finalColor{ };
 			HitRecord latestHit{ }; 
 
