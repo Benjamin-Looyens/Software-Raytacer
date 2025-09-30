@@ -73,6 +73,7 @@ namespace dae
 			}
 			else if (rDown) {
 				// HACK : Not sure why its inverted here, look into it :)
+				// TODO : Fix inverted up/down controls when flipped 180?
 				rotation.y += mouseX;
 				rotation.x -= mouseY;
 			}

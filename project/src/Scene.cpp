@@ -47,8 +47,18 @@ namespace dae {
 
 	bool Scene::DoesHit(const Ray& ray) const
 	{
-		//todo W2
-		throw std::runtime_error("Not Implemented Yet");
+		HitRecord dummy{};
+
+		for (const Sphere& sphere : m_SphereGeometries) {
+			HitRecord curHit{};
+			if (GeometryUtils::HitTest_Sphere(sphere, ray, dummy, true)) return true;
+		}
+
+		for (const Plane& plane : m_PlaneGeometries) {
+			HitRecord curHit{};
+			if (GeometryUtils::HitTest_Plane(plane, ray, curHit)) return true;
+		}
+
 		return false;
 	}
 
