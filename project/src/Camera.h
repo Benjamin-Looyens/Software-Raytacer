@@ -57,6 +57,9 @@ namespace dae
 			if (pKeyboardState[SDL_SCANCODE_D]) movement += right;
 			if (pKeyboardState[SDL_SCANCODE_A]) movement -= right;
 
+			if (pKeyboardState[SDL_SCANCODE_SPACE]) movement += up;
+			if (pKeyboardState[SDL_SCANCODE_LSHIFT]) movement -= up;
+
 			// Mouse Input
 			int mouseX{}, mouseY{};
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
@@ -64,9 +67,18 @@ namespace dae
 			const bool rDown = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
 			const bool lDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
 
-			if (rDown) {
+			if (rDown && lDown) {
+
+			}
+			else if (rDown) {
+				// HACK : Not sure why its inverted here, look into it :)
 				rotation.y += mouseX;
 				rotation.x -= mouseY;
+			}
+			else if (lDown) {
+				// TODO : add check for WASD so that it cant double up on forward movement
+				movement -= forward * static_cast<float>(mouseY);
+				rotation.y += mouseX;
 			}
 
 			if (movement.Normalize() > 0.0f) {
@@ -77,7 +89,7 @@ namespace dae
 			if (rotation.Normalize() > 0.0f) {
 				const Matrix rotMatrix = Matrix::CreateRotation(rotation * rotSpeed * deltaTime);
 				forward = rotMatrix.TransformVector(forward);
-				forward.Normalize(); // Is this necessary?
+				forward.Normalize(); // Is this necessary here?
 				toWorldDirty = true;
 			}
 		}
