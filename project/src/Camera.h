@@ -16,6 +16,8 @@ namespace dae
 
 		Vector3 origin{};
 		float fovAngle{ 90.f };
+		float fov{ };
+		bool fovDirty{ true };
 
 		float movSpeed{ 10.0f };
 		float rotSpeed{ 2.0f };
@@ -29,6 +31,16 @@ namespace dae
 
 		Matrix cameraToWorld{};
 		bool toWorldDirty{ true };
+
+		float GetFOV() 
+		{
+			if (fovDirty) {
+				fov = tanf((fovAngle / 2) * TO_RADIANS);
+				fovDirty = false;
+			}
+
+			return fov;
+		}
 
 		Matrix CalculateCameraToWorld()
 		{
@@ -67,7 +79,7 @@ namespace dae
 			const bool rDown = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
 			const bool lDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
 
-			// TODO : add check for keyboard inputs so that it cant double up on forward/backward & upward/downward movement
+			// NOTE : potentially could have a check for if there is keyboard input so that it does not double up, HOWEVER I normalize anyways so it should be fine
 			if (rDown && lDown) {
 				movement.y -= mouseY;
 			}
@@ -88,6 +100,7 @@ namespace dae
 				toWorldDirty = true;
 			}
 			if (rotation.Normalize() > 0.0f) {
+				// TODO : Actually use totalPitch & totalYaw
 				const Matrix rotMatrix = Matrix::CreateRotation(rotation * rotSpeed * deltaTime);
 				forward = rotMatrix.TransformVector(forward);
 				forward.Normalize(); // Is this necessary here?
