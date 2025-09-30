@@ -67,8 +67,9 @@ namespace dae
 			const bool rDown = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
 			const bool lDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
 
+			// TODO : add check for keyboard inputs so that it cant double up on forward/backward & upward/downward movement
 			if (rDown && lDown) {
-
+				movement.y -= mouseY;
 			}
 			else if (rDown) {
 				// HACK : Not sure why its inverted here, look into it :)
@@ -76,7 +77,6 @@ namespace dae
 				rotation.x -= mouseY;
 			}
 			else if (lDown) {
-				// TODO : add check for WASD so that it cant double up on forward movement
 				movement -= forward * static_cast<float>(mouseY);
 				rotation.y += mouseX;
 			}
