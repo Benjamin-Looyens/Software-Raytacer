@@ -35,7 +35,7 @@ void Renderer::Render(Scene* pScene) const
 	for (int px{}; px < m_Width; ++px) {
 		for (int py{}; py < m_Height; ++py) {
 			const float xNDC = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio;
-			const float yNDC = (1 - (2 * ((py + 0.5) / m_Height)));
+			const float yNDC = (1 - (2 * ((py + 0.5f) / m_Height)));
 
 			// TODO : Check if NDC coordinates are necessary anywhere else, otherwise dont need to allocate a different variable just for them
 			const float xC = xNDC * fov;

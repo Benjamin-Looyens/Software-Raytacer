@@ -17,7 +17,8 @@ namespace dae
 		Vector3 origin{};
 		float fovAngle{ 90.f };
 
-		float cameraSpeed{ 10.0f };
+		float movSpeed{ 10.0f };
+		float rotSpeed{ 2.0f };
 
 		Vector3 forward{ Vector3::UnitZ };
 		Vector3 up{ Vector3::UnitY };
@@ -45,36 +46,40 @@ namespace dae
 		{
 			const float deltaTime = pTimer->GetElapsed();
 
-			//Keyboard Input
+			// Keyboard Input
 			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
 
 			Vector3 movement{};
+			Vector3 rotation{};
 
-			if (pKeyboardState[SDL_SCANCODE_W]) {
-				movement += forward;
-				toWorldDirty = true;
-			}
-			if (pKeyboardState[SDL_SCANCODE_S]) {
-				movement -= forward;
-				toWorldDirty = true;
-			}
-			if (pKeyboardState[SDL_SCANCODE_D]) {
-				movement += right;
-				toWorldDirty = true;
-			}
-			if (pKeyboardState[SDL_SCANCODE_A]) {
-				movement -= right;
-				toWorldDirty = true;
-			}
+			if (pKeyboardState[SDL_SCANCODE_W]) movement += forward;
+			if (pKeyboardState[SDL_SCANCODE_S]) movement -= forward;
+			if (pKeyboardState[SDL_SCANCODE_D]) movement += right;
+			if (pKeyboardState[SDL_SCANCODE_A]) movement -= right;
 
-			if (movement.Normalize() > 0.0f) origin += movement * cameraSpeed * deltaTime;
-
-			//Mouse Input
+			// Mouse Input
 			int mouseX{}, mouseY{};
 			const uint32_t mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
 
-			
-			// TODO : set toWorldDirty to true if camera changed
+			const bool rDown = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
+			const bool lDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
+
+			if (rDown) {
+				rotation.y += mouseX;
+				rotation.x -= mouseY;
+			}
+
+			if (movement.Normalize() > 0.0f) {
+				// TODO : Figure out if this would work with the LMB movement when going into the scene
+				origin += movement * movSpeed * deltaTime;
+				toWorldDirty = true;
+			}
+			if (rotation.Normalize() > 0.0f) {
+				const Matrix rotMatrix = Matrix::CreateRotation(rotation * rotSpeed * deltaTime);
+				forward = rotMatrix.TransformVector(forward);
+				forward.Normalize(); // Is this necessary?
+				toWorldDirty = true;
+			}
 		}
 	};
 }
