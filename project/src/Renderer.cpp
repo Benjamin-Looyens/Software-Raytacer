@@ -30,7 +30,7 @@ void Renderer::Render(Scene* pScene) const
 	const float aspectRatio = static_cast<float>(m_Width) / static_cast<float>(m_Height);
 	// TODO : Implement GetFOV() function, where it checks if it needs to be calculated or not, otherwise just return stored value
 	const float fov = tanf((camera.fovAngle / 2) * TO_RADIANS);
-	camera.CalculateCameraToWorld(); // TODO : implement check for if calculated already or not
+	const Matrix& camToWorld = camera.CalculateCameraToWorld();
 
 	for (int px{}; px < m_Width; ++px) {
 		for (int py{}; py < m_Height; ++py) {
@@ -42,7 +42,7 @@ void Renderer::Render(Scene* pScene) const
 			const float yC = yNDC * fov;
 			
 			const Vector3 rayDir{ xC, yC, 1.0f };
-			const Vector3 rayDir_Normal = camera.cameraToWorld.TransformVector(rayDir.Normalized()); // TODO : prob switch up the camera transform elsewhere
+			const Vector3 rayDir_Normal = camToWorld.TransformVector(rayDir.Normalized()); // TODO : prob switch up the camera transform elsewhere
 
 			Ray viewRay{ camera.origin, rayDir_Normal };
 			ColorRGB finalColor{ };
