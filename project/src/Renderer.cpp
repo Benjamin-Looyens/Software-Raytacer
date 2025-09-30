@@ -28,13 +28,19 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 
 	const float aspectRatio = static_cast<float>(m_Width) / static_cast<float>(m_Height);
+	// TODO : Implement GetFOV() function, where it checks if it needs to be calculated or not, otherwise just return stored value
+	const float fov = tanf((camera.fovAngle / 2) * TO_RADIANS);
 
 	for (int px{}; px < m_Width; ++px) {
 		for (int py{}; py < m_Height; ++py) {
 			const float xNDC = (2 * ((px + 0.5f) / m_Width) - 1) * aspectRatio;
 			const float yNDC = (1 - (2 * ((py + 0.5) / m_Height)));
 
-			const Vector3 rayDir{ xNDC, yNDC, 1.0f };
+			// TODO : Check if NDC coordinates are necessary anywhere else, otherwise dont need to allocate a different variable just for them
+			const float xC = xNDC * fov;
+			const float yC = yNDC * fov;
+
+			const Vector3 rayDir{ xC, yC, 1.0f };
 			const Vector3 rayDir_Normal = rayDir.Normalized();
 
 			Ray viewRay{ camera.origin, rayDir_Normal };
