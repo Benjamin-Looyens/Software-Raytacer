@@ -20,7 +20,7 @@ namespace dae
 		bool fovDirty{ true };
 
 		float movSpeed{ 10.0f };
-		float rotSpeed{ 2.0f };
+		float rotSpeed{ 0.2f };
 
 		Vector3 forward{ Vector3::UnitZ };
 		Vector3 up{ Vector3::UnitY };
@@ -64,13 +64,16 @@ namespace dae
 			Vector3 movement{};
 			Vector3 rotation{};
 
-			if (pKeyboardState[SDL_SCANCODE_W]) movement += forward;
-			if (pKeyboardState[SDL_SCANCODE_S]) movement -= forward;
-			if (pKeyboardState[SDL_SCANCODE_D]) movement += right;
-			if (pKeyboardState[SDL_SCANCODE_A]) movement -= right;
+			bool movDirty{};
+			bool rotDirty{};
 
-			if (pKeyboardState[SDL_SCANCODE_SPACE]) movement += up;
-			if (pKeyboardState[SDL_SCANCODE_LSHIFT]) movement -= up;
+			if (pKeyboardState[SDL_SCANCODE_W]) { movement += forward; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_S]) { movement -= forward; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_D]) { movement += right; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_A]) { movement -= right; movDirty = true; }
+
+			if (pKeyboardState[SDL_SCANCODE_SPACE]) { movement += up; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_LSHIFT]) { movement -= up; movDirty = true; }
 
 			// Mouse Input
 			int mouseX{}, mouseY{};
@@ -82,24 +85,31 @@ namespace dae
 			// NOTE : potentially could have a check for if there is keyboard input so that it does not double up, HOWEVER I normalize anyways so it should be fine
 			if (rDown && lDown) {
 				movement.y -= mouseY;
+				movDirty = true;
 			}
 			else if (rDown) {
-				// HACK : Not sure why its inverted here, look into it :)
 				// TODO : Fix inverted up/down controls when flipped 180?
 				rotation.y += mouseX;
-				rotation.x -= mouseY;
+				rotation.x -= mouseY; 
+				rotDirty = true;
 			}
 			else if (lDown) {
+				// TODO : clamp forward movement?
 				movement -= forward * static_cast<float>(mouseY);
 				rotation.y += mouseX;
+
+				movDirty = true;
+				rotDirty = true;
 			}
 
-			if (movement.Normalize() > 0.0f) {
+			if (movDirty && movement.Normalize() > 0.0f) {
 				// TODO : Figure out if this would work with the LMB movement when going into the scene
+				movement.Normalize();
+				
 				origin += movement * movSpeed * deltaTime;
 				toWorldDirty = true;
 			}
-			if (rotation.Normalize() > 0.0f) {
+			if (rotDirty && rotation.Magnitude() > 0.0f) {
 				// TODO : Actually use totalPitch & totalYaw
 				const Matrix rotMatrix = Matrix::CreateRotation(rotation * rotSpeed * deltaTime);
 				forward = rotMatrix.TransformVector(forward);
