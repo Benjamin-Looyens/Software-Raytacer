@@ -73,8 +73,8 @@ namespace dae
 			if (pKeyboardState[SDL_SCANCODE_D]) { movement += right; movDirty = true; }
 			if (pKeyboardState[SDL_SCANCODE_A]) { movement -= right; movDirty = true; }
 
-			if (pKeyboardState[SDL_SCANCODE_SPACE]) { movement += up; movDirty = true; }
-			if (pKeyboardState[SDL_SCANCODE_LSHIFT]) { movement -= up; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_SPACE]) { movement += Vector3::UnitY; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_LSHIFT]) { movement -= Vector3::UnitY; movDirty = true; }
 
 			// Mouse Input
 			int mouseX{}, mouseY{};
@@ -89,7 +89,6 @@ namespace dae
 				movDirty = true;
 			}
 			else if (rDown) {
-				// TODO : prevent looping around when looking down (angle cannot exceed pi/2)
 				rotation.y += mouseX;
 				rotation.x -= mouseY; 
 				rotDirty = true;
@@ -105,17 +104,23 @@ namespace dae
 
 			if (movDirty && movement.Normalize() > 0.0f) {
 				// TODO : Figure out if this would work with the LMB movement when going into the scene
-				movement.Normalize();
-				
 				origin += movement * movSpeed * deltaTime;
 				toWorldDirty = true;
 			}
 			if (rotDirty && rotation.Magnitude() > 0.0f) { // NOTE : In theory I could do SqrMagnitude?
 				const Vector3 scaledRotation = rotation * rotSpeed * deltaTime;
 
+				// TODO : Check if Yaw/Pitch naming is even right
+				constexpr float OFFSET = 0.05f;
+				totalYaw += scaledRotation.x;
+				totalYaw = std::clamp(totalYaw, -PI * 0.5f + OFFSET, PI * 0.5f - OFFSET);
+
 				// Ensure always positive between 0 -> 6.28...
-				totalPitch = std::fmodf(std::fmodf(scaledRotation.y + totalPitch, PI_2) + PI_2, PI_2); 
-				totalYaw =	 std::fmodf(std::fmodf(scaledRotation.x + totalYaw,	  PI_2) + PI_2, PI_2);
+				totalPitch = std::fmodf(std::fmodf(scaledRotation.y + totalPitch, PI_2) + PI_2, PI_2);
+				//totalYaw =	 std::fmodf(std::fmodf(scaledRotation.x + totalYaw,	  PI_2) + PI_2, PI_2);
+
+				//std::cout << "Pitch: " << totalPitch << "\n";
+				//std::cout << "Yaw: " << totalYaw << "\n";
 
 				const Matrix fullRotMatrix = Matrix::CreateRotationX(totalYaw) * Matrix::CreateRotationY(totalPitch);
 				forward = fullRotMatrix.TransformVector(Vector3::UnitZ);
