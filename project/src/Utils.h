@@ -19,32 +19,40 @@ namespace dae
 			const float c = Vector3::Dot(sphereToRay, sphereToRay) - (sphere.radius * sphere.radius);
 			const float discriminant = (b * b) - 4 * (a * c);
 
-
 			if (discriminant > 0) {
 				// TODO : Double check the intersection point & t
 				const float sqrtDiscriminant = sqrtf(discriminant);
-
 				const float t0 = (-b - sqrtDiscriminant) / (2 * a);
 
-				// TODO : add HitRecord normal
+				// I kinda hate how this reads but yea
+				bool withinBoundaries{ false };
 				if (t0 > ray.min) {
 					if (t0 < ray.max) {
-						curHit.t = t0;
-						curHit.didHit = true;
-						curHit.materialIndex = sphere.materialIndex;
-						curHit.origin = ray.origin + (t0 * ray.direction);
-						return true;
+						if (!ignoreHitRecord) {
+							curHit.t = t0;
+							curHit.origin = ray.origin + (t0 * ray.direction);
+						}
+						withinBoundaries = true;
 					}
 				}
 				else {
 					const float t1 = (-b + sqrtDiscriminant) / (2 * a);
 					if (t1 > ray.min && t1 < ray.max) {
-						curHit.t = t1;
+						if (!ignoreHitRecord) {
+							curHit.t = t1;
+							curHit.origin = ray.origin + (t1 * ray.direction);
+						}
+						withinBoundaries = true;
+					}
+				}
+
+				if (withinBoundaries) {
+					if (!ignoreHitRecord) {
 						curHit.didHit = true;
 						curHit.materialIndex = sphere.materialIndex;
-						curHit.origin = ray.origin + (t1 * ray.direction);
-						return true;
+						curHit.normal = (curHit.origin - sphere.origin).Normalized();
 					}
+					return true;
 				}
 			}
 
@@ -65,11 +73,14 @@ namespace dae
 			const float t = Vector3::Dot(rayToPlane, plane.normal) / Vector3::Dot(ray.direction, plane.normal);
 
 			if (t > ray.min && t < ray.max) {
-				// TODO : add HitRecord normal
-				curHit.t = t;
-				curHit.didHit = true;
-				curHit.materialIndex = plane.materialIndex;
-				curHit.origin = ray.origin + (t * ray.direction);
+				if (!ignoreHitRecord) {
+					curHit.t = t;
+					curHit.didHit = true;
+					curHit.materialIndex = plane.materialIndex;
+					curHit.origin = ray.origin + (t * ray.direction);
+					curHit.normal = plane.normal;
+				}
+				return true;
 			}
 
 			return false;
