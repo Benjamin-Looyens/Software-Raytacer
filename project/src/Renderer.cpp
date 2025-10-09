@@ -51,15 +51,16 @@ void Renderer::Render(Scene* pScene) const
 			pScene->GetClosestHit(viewRay, latestHit);
 
 			if (latestHit.didHit) {
-				finalColor = materials[latestHit.materialIndex]->Shade();
+				//finalColor = materials[latestHit.materialIndex]->Shade();
 
-				if (m_DoShadows) {
-					for (const Light& light : pScene->GetLights()) {
-						Ray lightRay{ latestHit.origin, light.origin - latestHit.origin, 0.001f };
-						lightRay.max = lightRay.direction.Normalize();
+				for (const Light& light : pScene->GetLights()) {
+					Ray lightRay{ latestHit.origin, light.origin - latestHit.origin, 0.001f };
+					lightRay.max = lightRay.direction.Normalize();
 
-						if (pScene->DoesHit(lightRay)) finalColor *= 0.5f;
-					}
+					// I need E_rgb -> Which is what LightUtils::GetRadiance() returns
+					finalColor += LightUtils::GetRadiance(light, latestHit.origin);
+
+					if (m_DoShadows && pScene->DoesHit(lightRay)) finalColor *= 0.5f;
 				}
 			}
 

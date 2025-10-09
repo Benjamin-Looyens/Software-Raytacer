@@ -124,9 +124,21 @@ namespace dae
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
 		{
-			//todo W3
-			throw std::runtime_error("Not Implemented Yet");
-			return {};
+			// Radiance = W / (sr * (m*m))
+			ColorRGB retColor;
+			
+			switch (light.type) {
+			case LightType::Directional:
+				retColor = light.color * light.intensity;
+				break;
+			case LightType::Point:
+				// E_rgb = lightcolor * (I / (lightPosition - PointToShade)^2)
+				const Vector3 lightToTarget = light.origin - target;
+				retColor = light.color * (light.intensity / Vector3::Dot(lightToTarget, lightToTarget));
+				break;
+			}
+
+			return retColor;
 		}
 	}
 
