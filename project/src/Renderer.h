@@ -20,6 +20,7 @@ namespace dae
 
 		void Render(Scene* pScene) const;
 		bool SaveBufferToImage() const;
+		void ToggleShadows() { m_DoShadows = !m_DoShadows; }
 
 	private:
 		SDL_Window* m_pWindow{};
@@ -29,5 +30,7 @@ namespace dae
 
 		int m_Width{};
 		int m_Height{};
+
+		bool m_DoShadows{ false };
 	};
 }

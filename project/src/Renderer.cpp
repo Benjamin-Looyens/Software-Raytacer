@@ -53,11 +53,13 @@ void Renderer::Render(Scene* pScene) const
 			if (latestHit.didHit) {
 				finalColor = materials[latestHit.materialIndex]->Shade();
 
-				for (const Light& light : pScene->GetLights()) {
-					Ray lightRay{ latestHit.origin, light.origin - latestHit.origin, 0.001f };
-					lightRay.max = lightRay.direction.Normalize();
+				if (m_DoShadows) {
+					for (const Light& light : pScene->GetLights()) {
+						Ray lightRay{ latestHit.origin, light.origin - latestHit.origin, 0.001f };
+						lightRay.max = lightRay.direction.Normalize();
 
-					if (pScene->DoesHit(lightRay)) finalColor *= 0.5f;
+						if (pScene->DoesHit(lightRay)) finalColor *= 0.5f;
+					}
 				}
 			}
 
