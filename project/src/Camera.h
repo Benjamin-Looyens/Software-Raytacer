@@ -3,7 +3,7 @@
 #include <SDL_mouse.h>
 #include "Math.h"
 #include "Timer.h"
-//#include <iostream>
+#include <iostream>
 
 namespace dae
 {
@@ -89,8 +89,8 @@ namespace dae
 				movDirty = true;
 			}
 			else if (rDown) {
-				// TODO : Fix inverted up/down controls when flipped 180?
-				rotation.y += mouseX; // I think here is the camera problem
+				// TODO : prevent looping around when looking down (angle cannot exceed pi/2)
+				rotation.y += mouseX;
 				rotation.x -= mouseY; 
 				rotDirty = true;
 			}
@@ -111,15 +111,14 @@ namespace dae
 				toWorldDirty = true;
 			}
 			if (rotDirty && rotation.Magnitude() > 0.0f) { // NOTE : In theory I could do SqrMagnitude?
-				// TODO : Actually use totalPitch & totalYaw
-				//totalPitch += rotation.y;
-				//totalYaw += rotation.x;
+				const Vector3 scaledRotation = rotation * rotSpeed * deltaTime;
 
-				//std::cout << "Pitch: " << totalPitch << "\n";
-				//std::cout << "Yaw: " << totalYaw << "\n";
+				// Ensure always positive between 0 -> 6.28...
+				totalPitch = std::fmodf(std::fmodf(scaledRotation.y + totalPitch, PI_2) + PI_2, PI_2); 
+				totalYaw =	 std::fmodf(std::fmodf(scaledRotation.x + totalYaw,	  PI_2) + PI_2, PI_2);
 
-				const Matrix rotMatrix = Matrix::CreateRotation(rotation * rotSpeed * deltaTime);
-				forward = rotMatrix.TransformVector(forward);
+				const Matrix fullRotMatrix = Matrix::CreateRotationX(totalYaw) * Matrix::CreateRotationY(totalPitch);
+				forward = fullRotMatrix.TransformVector(Vector3::UnitZ);
 				forward.Normalize(); // Is this necessary here?
 				toWorldDirty = true;
 			}
