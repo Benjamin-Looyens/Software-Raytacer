@@ -205,6 +205,7 @@ namespace dae {
 
 		// Lights
 		AddPointLight({ 0.0f, 5.0f, 5.0f }, 25.0f, colors::White);
+		AddPointLight({ 0.0f, 2.5f, -5.0f }, 25.0f, colors::White);
 	}
 #pragma endregion TEST_SCENE W3
 

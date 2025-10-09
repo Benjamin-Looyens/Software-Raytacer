@@ -57,8 +57,11 @@ void Renderer::Render(Scene* pScene) const
 					Ray lightRay{ latestHit.origin, light.origin - latestHit.origin, 0.001f };
 					lightRay.max = lightRay.direction.Normalize();
 
-					// I need E_rgb -> Which is what LightUtils::GetRadiance() returns
-					finalColor += LightUtils::GetRadiance(light, latestHit.origin);
+					// TODO : Point vs directional light difference?
+					const Vector3 lightToTarget = light.origin - latestHit.origin;
+					const float observedArea = Vector3::Dot(latestHit.normal, lightToTarget.Normalized());
+					
+					finalColor += LightUtils::GetRadiance(light, latestHit.origin) * std::clamp(observedArea, 0.0f, 1.0f);
 
 					if (m_DoShadows && pScene->DoesHit(lightRay)) finalColor *= 0.5f;
 				}
