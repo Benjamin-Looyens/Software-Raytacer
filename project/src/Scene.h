@@ -92,4 +92,20 @@ namespace dae
 
 		void Initialize() override;
 	};
+
+	//+++++++++++++++++++++++++++++++++++++++++
+	//WEEK 3 Light Test Scene
+	class Scene_TEST_W3 final : public Scene
+	{
+	public:
+		Scene_TEST_W3() = default;
+		~Scene_TEST_W3() override = default;
+
+		Scene_TEST_W3(const Scene_TEST_W3&) = delete;
+		Scene_TEST_W3(Scene_TEST_W3&&) noexcept = delete;
+		Scene_TEST_W3& operator=(const Scene_TEST_W3&) = delete;
+		Scene_TEST_W3& operator=(Scene_TEST_W3&&) noexcept = delete;
+
+		void Initialize() override;
+	};
 }

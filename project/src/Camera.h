@@ -3,6 +3,7 @@
 #include <SDL_mouse.h>
 #include "Math.h"
 #include "Timer.h"
+//#include <iostream>
 
 namespace dae
 {
@@ -89,7 +90,7 @@ namespace dae
 			}
 			else if (rDown) {
 				// TODO : Fix inverted up/down controls when flipped 180?
-				rotation.y += mouseX;
+				rotation.y += mouseX; // I think here is the camera problem
 				rotation.x -= mouseY; 
 				rotDirty = true;
 			}
@@ -109,8 +110,14 @@ namespace dae
 				origin += movement * movSpeed * deltaTime;
 				toWorldDirty = true;
 			}
-			if (rotDirty && rotation.Magnitude() > 0.0f) {
+			if (rotDirty && rotation.Magnitude() > 0.0f) { // NOTE : In theory I could do SqrMagnitude?
 				// TODO : Actually use totalPitch & totalYaw
+				//totalPitch += rotation.y;
+				//totalYaw += rotation.x;
+
+				//std::cout << "Pitch: " << totalPitch << "\n";
+				//std::cout << "Yaw: " << totalYaw << "\n";
+
 				const Matrix rotMatrix = Matrix::CreateRotation(rotation * rotSpeed * deltaTime);
 				forward = rotMatrix.TransformVector(forward);
 				forward.Normalize(); // Is this necessary here?
