@@ -51,8 +51,6 @@ void Renderer::Render(Scene* pScene) const
 			pScene->GetClosestHit(viewRay, latestHit);
 
 			if (latestHit.didHit) {
-				//finalColor = materials[latestHit.materialIndex]->Shade();
-
 				for (const Light& light : pScene->GetLights()) {
 					Ray lightRay{ latestHit.origin, light.origin - latestHit.origin, 0.001f };
 					lightRay.max = lightRay.direction.Normalize();
@@ -61,8 +59,10 @@ void Renderer::Render(Scene* pScene) const
 					const Vector3 lightToTarget = light.origin - latestHit.origin;
 					const float observedArea = Vector3::Dot(latestHit.normal, lightToTarget.Normalized());
 					
-					finalColor += LightUtils::GetRadiance(light, latestHit.origin) * std::clamp(observedArea, 0.0f, 1.0f);
+					finalColor += materials[latestHit.materialIndex]->Shade() * LightUtils::GetRadiance(light, latestHit.origin) * std::clamp(observedArea, 0.0f, 1.0f);
 
+					// TODO : Fix weird shadow interaction with lights
+					// TODO : Refactor loop based on slides
 					if (m_DoShadows && pScene->DoesHit(lightRay)) finalColor *= 0.5f;
 				}
 			}
