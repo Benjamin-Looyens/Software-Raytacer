@@ -89,3 +89,9 @@ bool Renderer::SaveBufferToImage() const
 {
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
 }
+
+void dae::Renderer::CycleLightingMode()
+{
+	m_CurMode = static_cast<LightingMode>((static_cast<int>(m_CurMode) + 1) % static_cast<int>(LightingMode::ModeAmount)); // Yuck
+	//std::cout << "Current Lighting Mode: " << static_cast<int>(m_CurMode) << "\n";
+}
