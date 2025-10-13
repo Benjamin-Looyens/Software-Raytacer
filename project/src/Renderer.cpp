@@ -64,9 +64,23 @@ void Renderer::Render(Scene* pScene) const
 					if (observedArea < 0) continue;
 					if (m_DoShadows && pScene->DoesHit(lightRay)) continue;
 					
-					finalColor +=	materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction) *
-									LightUtils::GetRadiance(light, latestHit.origin) * 
-									std::clamp(observedArea, 0.0f, 1.0f);
+					switch (m_CurMode) {
+					case LightingMode::ObservedArea:
+						finalColor += { 1.0f, 1.0f, 1.0f };
+						finalColor *= std::clamp(observedArea, 0.0f, 1.0f); // This looks consistently wrong
+						break;
+					case LightingMode::Radiance:
+						finalColor += LightUtils::GetRadiance(light, latestHit.origin); // Always has shadows on the object itself for some reason?
+						break;
+					case LightingMode::BRDF:
+						finalColor += materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction); // This looks consistently wrong
+						break;
+					case LightingMode::Combined:
+						finalColor +=	materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction) *
+										LightUtils::GetRadiance(light, latestHit.origin) * 
+										std::clamp(observedArea, 0.0f, 1.0f);
+						break;
+					}
 				}
 			}
 

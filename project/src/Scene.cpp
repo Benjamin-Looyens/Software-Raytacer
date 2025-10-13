@@ -233,20 +233,12 @@ namespace dae {
 		AddPlane({ -5.0f,  0.0f,  0.0f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
 
 		// Spheres
-		//AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matCT_GrayRoughMetal);
-		//AddSphere({  0.00f, 1.0f, 0.0f }, 0.75f, matCT_GrayMediumMetal);
-		//AddSphere({  1.75f, 1.0f, 0.0f }, 0.75f, matCT_GraySmoothetal);
-		//AddSphere({ -1.75f, 3.0f, 0.0f }, 0.75f, matCT_GrayRoughPlastic);
-		//AddSphere({  0.00f, 3.0f, 0.0f }, 0.75f, matCT_GrayMediumPlastic);
-		//AddSphere({  1.75f, 3.0f, 0.0f }, 0.75f, matCT_GraySmoothPlastic);
-
-		// Temorary Phong Test Spheres
-		const auto matLambertPhong1 = AddMaterial(new Material_LambertPhong(colors::Blue, 0.5f, 0.5f, 3.0f));
-		const auto matLambertPhong2 = AddMaterial(new Material_LambertPhong(colors::Blue, 0.5f, 0.5f, 15.0f));
-		const auto matLambertPhong3 = AddMaterial(new Material_LambertPhong(colors::Blue, 0.5f, 0.5f, 50.0f));
-		AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matLambertPhong1);
-		AddSphere({ 0.00f, 1.0f, 0.0f }, 0.75f, matLambertPhong2);
-		AddSphere({ 1.75f, 1.0f, 0.0f }, 0.75f, matLambertPhong3);
+		AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matCT_GrayRoughMetal);
+		AddSphere({  0.00f, 1.0f, 0.0f }, 0.75f, matCT_GrayMediumMetal);
+		AddSphere({  1.75f, 1.0f, 0.0f }, 0.75f, matCT_GraySmoothetal);
+		AddSphere({ -1.75f, 3.0f, 0.0f }, 0.75f, matCT_GrayRoughPlastic);
+		AddSphere({  0.00f, 3.0f, 0.0f }, 0.75f, matCT_GrayMediumPlastic);
+		AddSphere({  1.75f, 3.0f, 0.0f }, 0.75f, matCT_GraySmoothPlastic);
 
 		// Light
 		AddPointLight({  0.0f, 5.0f,  5.0f }, 50.0f, { 1.00f, 0.61f, 0.45f }); // Backlight

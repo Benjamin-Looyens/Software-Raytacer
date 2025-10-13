@@ -37,7 +37,7 @@ namespace dae
 		{
 			const Vector3 reflect = -l - (2.0f * (Vector3::Dot(-l, n) * n));
 			const float cosAngle = std::max(Vector3::Dot(reflect, v), 0.0f);
-			const float specular = ks * std::pow(cosAngle, exp);
+			const float specular = ks * std::pow(cosAngle, exp); // HACK : std::powf instead?
 
 			return { specular, specular, specular };
 		}
@@ -51,9 +51,12 @@ namespace dae
 		 */
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
-			//todo: W3
-			throw std::runtime_error("Not Implemented Yet");
-			return {};
+			// f0 + (1 - f0)(1 -(h dot v))^5
+
+			const float hvCalc = std::pow(1.0f - Vector3::Dot(h, v), 5);
+			constexpr ColorRGB oneColor = { 1.0f, 1.0f, 1.0f };
+
+			return f0 + ((oneColor - f0) * hvCalc);
 		}
 
 		/**
@@ -65,9 +68,14 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-			//todo: W3
-			throw std::runtime_error("Not Implemented Yet");
-			return {};
+			// roughness^2 / (PI ((n dot h)^2 (roughness^2 - 1) + 1)
+
+			// According to slides, a = roughness squared, but then shows a squared, so shouild I square it twice?
+			const float a = roughness * roughness;
+			const float aSqr = a * a;
+			const float nhSqr = std::pow(Vector3::Dot(n, h), 2);
+
+			return aSqr / (PI * std::pow(nhSqr * (aSqr - 1.0f) + 1.0f, 2));
 		}
 
 
@@ -80,9 +88,14 @@ namespace dae
 		 */
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
-			//todo: W3
-			throw std::runtime_error("Not Implemented Yet");
-			return {};
+			// (n dot v) / (n dot v) (1 - k) + k
+			// k = (a + 1)^2 / 8
+
+			const float a = roughness * roughness;
+			const float k = std::pow(a + 1, 2) / 8.0f;
+			const float nDotV = Vector3::Dot(n, v);
+
+			return nDotV / (nDotV * (1.0f - k) + k);
 		}
 
 		/**
@@ -95,9 +108,7 @@ namespace dae
 		 */
 		static float GeometryFunction_Smith(const Vector3& n, const Vector3& v, const Vector3& l, float roughness)
 		{
-			//todo: W3
-			throw std::runtime_error("Not Implemented Yet");
-			return {};
+			return GeometryFunction_SchlickGGX(n, v, roughness) * GeometryFunction_SchlickGGX(n, l, roughness); // I think ??
 		}
 
 	}
