@@ -226,19 +226,27 @@ namespace dae {
 		const auto matLambert_GrayBlue		= AddMaterial(new Material_Lambert( { 0.49f, 0.57f, 0.57f }, 1.0f));
 
 		// Planes
-		AddPlane({  0.0f,  0.0f, 10.f }, {  0.0f,  0.0f, -1.0f }, matLambert_GrayBlue); // Back
-		AddPlane({  0.0f,  0.0f,  0.f }, {  0.0f,  1.0f,  1.0f }, matLambert_GrayBlue); // Bottom
-		AddPlane({  0.0f, 10.0f,  0.f }, {  0.0f, -1.0f,  0.0f }, matLambert_GrayBlue); // Top
-		AddPlane({  5.0f,  0.0f,  0.f }, { -1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Right
-		AddPlane({ -5.0f,  0.0f,  0.f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
+		AddPlane({  0.0f,  0.0f, 10.0f }, {  0.0f,  0.0f, -1.0f }, matLambert_GrayBlue); // Back
+		AddPlane({  0.0f,  0.0f,  0.0f }, {  0.0f,  1.0f,  0.0f }, matLambert_GrayBlue); // Bottom
+		AddPlane({  0.0f, 10.0f,  0.0f }, {  0.0f, -1.0f,  0.0f }, matLambert_GrayBlue); // Top
+		AddPlane({  5.0f,  0.0f,  0.0f }, { -1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Right
+		AddPlane({ -5.0f,  0.0f,  0.0f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
 
 		// Spheres
-		AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matCT_GrayRoughMetal);
-		AddSphere({  0.00f, 1.0f, 0.0f }, 0.75f, matCT_GrayMediumMetal);
-		AddSphere({  1.75f, 1.0f, 0.0f }, 0.75f, matCT_GraySmoothetal);
-		AddSphere({ -1.75f, 3.0f, 0.0f }, 0.75f, matCT_GrayRoughPlastic);
-		AddSphere({  0.00f, 3.0f, 0.0f }, 0.75f, matCT_GrayMediumPlastic);
-		AddSphere({  1.75f, 3.0f, 0.0f }, 0.75f, matCT_GraySmoothPlastic);
+		//AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matCT_GrayRoughMetal);
+		//AddSphere({  0.00f, 1.0f, 0.0f }, 0.75f, matCT_GrayMediumMetal);
+		//AddSphere({  1.75f, 1.0f, 0.0f }, 0.75f, matCT_GraySmoothetal);
+		//AddSphere({ -1.75f, 3.0f, 0.0f }, 0.75f, matCT_GrayRoughPlastic);
+		//AddSphere({  0.00f, 3.0f, 0.0f }, 0.75f, matCT_GrayMediumPlastic);
+		//AddSphere({  1.75f, 3.0f, 0.0f }, 0.75f, matCT_GraySmoothPlastic);
+
+		// Temorary Phong Test Spheres
+		const auto matLambertPhong1 = AddMaterial(new Material_LambertPhong(colors::Blue, 0.5f, 0.5f, 3.0f));
+		const auto matLambertPhong2 = AddMaterial(new Material_LambertPhong(colors::Blue, 0.5f, 0.5f, 15.0f));
+		const auto matLambertPhong3 = AddMaterial(new Material_LambertPhong(colors::Blue, 0.5f, 0.5f, 50.0f));
+		AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matLambertPhong1);
+		AddSphere({ 0.00f, 1.0f, 0.0f }, 0.75f, matLambertPhong2);
+		AddSphere({ 1.75f, 1.0f, 0.0f }, 0.75f, matLambertPhong3);
 
 		// Light
 		AddPointLight({  0.0f, 5.0f,  5.0f }, 50.0f, { 1.00f, 0.61f, 0.45f }); // Backlight

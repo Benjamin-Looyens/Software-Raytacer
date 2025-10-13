@@ -58,12 +58,15 @@ void Renderer::Render(Scene* pScene) const
 					// NOTE : Can I calculate whether a light has any effect before the other calculations?
 					// TODO : Point vs directional light difference?
 					const Vector3 lightToTarget = light.origin - latestHit.origin;
-					const float observedArea = Vector3::Dot(latestHit.normal, lightToTarget.Normalized());
+					const Vector3 lightToTarget_Normal = lightToTarget.Normalized();
+					const float observedArea = Vector3::Dot(latestHit.normal, lightToTarget_Normal);
 
 					if (observedArea < 0) continue;
 					if (m_DoShadows && pScene->DoesHit(lightRay)) continue;
 					
-					finalColor += materials[latestHit.materialIndex]->Shade() * LightUtils::GetRadiance(light, latestHit.origin) * std::clamp(observedArea, 0.0f, 1.0f);
+					finalColor +=	materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction) *
+									LightUtils::GetRadiance(light, latestHit.origin) * 
+									std::clamp(observedArea, 0.0f, 1.0f);
 				}
 			}
 

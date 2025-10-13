@@ -1,5 +1,6 @@
 #pragma once
 #include "Math.h"
+#include <iostream>
 
 namespace dae
 {
@@ -34,9 +35,11 @@ namespace dae
 		 */
 		static ColorRGB Phong(float ks, float exp, const Vector3& l, const Vector3& v, const Vector3& n)
 		{
-			//todo: W3
-			throw std::runtime_error("Not Implemented Yet");
-			return {};
+			const Vector3 reflect = -l - (2.0f * (Vector3::Dot(-l, n) * n));
+			const float cosAngle = std::max(Vector3::Dot(reflect, v), 0.0f);
+			const float specular = ks * std::pow(cosAngle, exp);
+
+			return { specular, specular, specular };
 		}
 
 		/**
