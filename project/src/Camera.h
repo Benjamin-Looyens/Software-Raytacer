@@ -17,7 +17,7 @@ namespace dae
 
 		Vector3 origin{};
 		float fovAngle{ 90.f };
-		float fov{ };
+		float fov{ }; // Camera is a struct, so would assume POD, but could set as private maybe?
 		bool fovDirty{ true };
 
 		float movSpeed{ 10.0f };

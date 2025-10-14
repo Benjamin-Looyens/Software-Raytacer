@@ -70,10 +70,12 @@ void Renderer::Render(Scene* pScene) const
 						finalColor += { observedArea, observedArea, observedArea };
 						break;
 					case LightingMode::Radiance:
-						finalColor += LightUtils::GetRadiance(light, latestHit.origin); // Always has shadows on the object itself for some reason?
+						// TODO : Fix the fact that there still seems to be some sort of shadows on the spheres themselves even with shadows off
+						finalColor += LightUtils::GetRadiance(light, latestHit.origin);
 						break;
 					case LightingMode::BRDF:
-						finalColor += materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction); // This looks consistently wrong
+						// TODO : Fix the rendering on bottom spheres (look at slides)
+						finalColor += materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction); 
 						break;
 					case LightingMode::Combined:
 						finalColor +=	materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction) *

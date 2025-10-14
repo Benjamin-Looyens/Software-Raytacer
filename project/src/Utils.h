@@ -96,9 +96,45 @@ namespace dae
 		//TRIANGLE HIT-TESTS
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W5
-			throw std::runtime_error("Not Implemented Yet");
-			return false;
+			// if (e x p) dot n < 0  -> return false
+			// v = vertex
+			// e = v_next - v_current
+			// p = P - v
+			// P = ray.origin + (viewRay * t)
+
+			const Vector3 a = triangle.v1 - triangle.v0;
+			const Vector3 b = triangle.v2 - triangle.v0;
+			const Vector3 normal = Vector3::Cross(a, b).Normalized(); // Do I need to calculate the normal ?
+
+			if (Vector3::Dot(normal, ray.direction) == 0.0f) return false; // use AreEqual?
+
+			const Vector3 rayToV0 = triangle.v0 - ray.origin;
+			const float t = Vector3::Dot(rayToV0, normal) / Vector3::Dot(ray.direction, normal);
+
+			if (t < ray.min || t > ray.max) return false;
+
+			const Vector3 p = ray.origin + (ray.direction * t); // Intersection point
+			
+			const Vector3 cV0 = p - triangle.v0;
+			if (Vector3::Dot(normal, Vector3::Cross(a, cV0)) < 0) return false;
+
+			const Vector3 eV1 = triangle.v2 - triangle.v1;
+			const Vector3 cV1 = p - triangle.v1;
+			if (Vector3::Dot(normal, Vector3::Cross(eV1, cV1)) < 0) return false;
+
+			const Vector3 eV2 = triangle.v0 - triangle.v2;
+			const Vector3 cV2 = p - triangle.v2;
+			if (Vector3::Dot(normal, Vector3::Cross(eV2, cV2)) < 0) return false;
+
+			if (!ignoreHitRecord) {
+				hitRecord.t = t;
+				hitRecord.normal = normal;
+				hitRecord.materialIndex = triangle.materialIndex;
+				hitRecord.didHit = true;
+				hitRecord.origin = p;
+			}
+
+			return true;
 		}
 
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray)
