@@ -13,9 +13,6 @@ namespace dae
 		 */
 		static ColorRGB Lambert(float kd, const ColorRGB& cd)
 		{
-			// P / pi
-			// P = diffuse reflectance = cd
-
 			return (kd / PI) * cd;
 		}
 
@@ -37,7 +34,7 @@ namespace dae
 		{
 			const Vector3 reflect = -l - (2.0f * (Vector3::Dot(-l, n) * n));
 			const float cosAngle = std::max(Vector3::Dot(reflect, v), 0.0f);
-			const float specular = ks * std::powf(cosAngle, exp); // HACK : std::powf instead?
+			const float specular = ks * std::powf(cosAngle, exp);
 
 			return { specular, specular, specular };
 		}
@@ -51,8 +48,6 @@ namespace dae
 		 */
 		static ColorRGB FresnelFunction_Schlick(const Vector3& h, const Vector3& v, const ColorRGB& f0)
 		{
-			// f0 + (1 - f0)(1 -(h dot v))^5
-
 			const float hvCalc = std::powf(1.0f - Vector3::Dot(h, v), 5.0f);
 			constexpr ColorRGB oneColor = { 1.0f, 1.0f, 1.0f };
 
@@ -68,9 +63,6 @@ namespace dae
 		 */
 		static float NormalDistribution_GGX(const Vector3& n, const Vector3& h, float roughness)
 		{
-			// roughness^2 / (PI ((n dot h)^2 (roughness^2 - 1) + 1)
-
-			// According to slides, a = roughness squared, but then shows a squared, so shouild I square it twice?
 			const float a = roughness * roughness;
 			const float aSqr = a * a;
 			const float nhSqr = std::powf(Vector3::Dot(n, h), 2.0f);
@@ -88,9 +80,6 @@ namespace dae
 		 */
 		static float GeometryFunction_SchlickGGX(const Vector3& n, const Vector3& v, float roughness)
 		{
-			// (n dot v) / (n dot v) (1 - k) + k
-			// k = (a + 1)^2 / 8
-
 			const float a = roughness * roughness;
 			const float k = std::powf(a + 1, 2.0f) / 8.0f;
 			const float nDotV = Vector3::Dot(n, v);

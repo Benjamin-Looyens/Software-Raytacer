@@ -100,9 +100,6 @@ namespace dae
 
 		ColorRGB Shade(const HitRecord& hitRecord = {}, const Vector3& l = {}, const Vector3& v = {}) override
 		{
-			// cook-torrence = (D F G) / (4(v dot n) (l dot n))
-			// finalColor = kd * lambert + ks * cook-torrence ?
-
 			ColorRGB f0 = m_Albedo;
 			if (m_Metalness == 0.0f) f0 = { 0.04f, 0.04f, 0.04f };
 
@@ -117,7 +114,7 @@ namespace dae
 			constexpr ColorRGB oneColor = { 1.0f, 1.0f, 1.0f };
 			const ColorRGB specular = (D * F * G) / (4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal));
 			const ColorRGB kd = oneColor - F;
-			const ColorRGB diffuse = BRDF::Lambert(kd, m_Albedo); // Diffuse color ??
+			const ColorRGB diffuse = BRDF::Lambert(kd, m_Albedo);
 
 			return diffuse + specular;
 		}

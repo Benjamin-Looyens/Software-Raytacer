@@ -28,7 +28,6 @@ void Renderer::Render(Scene* pScene) const
 	auto& lights = pScene->GetLights();
 
 	const float aspectRatio = static_cast<float>(m_Width) / static_cast<float>(m_Height);
-	// TODO : Implement GetFOV() function, where it checks if it needs to be calculated or not, otherwise just return stored value
 	const float& fov = camera.GetFOV();
 	const Matrix& camToWorld = camera.CalculateCameraToWorld();
 

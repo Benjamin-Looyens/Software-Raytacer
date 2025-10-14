@@ -135,7 +135,6 @@ namespace dae
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)
 		{
-			// Radiance = W / (sr * (m*m))
 			ColorRGB retColor;
 			
 			switch (light.type) {
@@ -143,7 +142,6 @@ namespace dae
 				retColor = light.color * light.intensity;
 				break;
 			case LightType::Point:
-				// E_rgb = lightcolor * (I / (lightPosition - PointToShade)^2)
 				const Vector3 lightToTarget = light.origin - target;
 				retColor = light.color * (light.intensity / Vector3::Dot(lightToTarget, lightToTarget));
 				break;
