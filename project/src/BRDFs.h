@@ -37,7 +37,7 @@ namespace dae
 		{
 			const Vector3 reflect = -l - (2.0f * (Vector3::Dot(-l, n) * n));
 			const float cosAngle = std::max(Vector3::Dot(reflect, v), 0.0f);
-			const float specular = ks * std::pow(cosAngle, exp); // HACK : std::powf instead?
+			const float specular = ks * std::powf(cosAngle, exp); // HACK : std::powf instead?
 
 			return { specular, specular, specular };
 		}
@@ -53,7 +53,7 @@ namespace dae
 		{
 			// f0 + (1 - f0)(1 -(h dot v))^5
 
-			const float hvCalc = std::pow(1.0f - Vector3::Dot(h, v), 5);
+			const float hvCalc = std::powf(1.0f - Vector3::Dot(h, v), 5.0f);
 			constexpr ColorRGB oneColor = { 1.0f, 1.0f, 1.0f };
 
 			return f0 + ((oneColor - f0) * hvCalc);
@@ -73,9 +73,9 @@ namespace dae
 			// According to slides, a = roughness squared, but then shows a squared, so shouild I square it twice?
 			const float a = roughness * roughness;
 			const float aSqr = a * a;
-			const float nhSqr = std::pow(Vector3::Dot(n, h), 2);
+			const float nhSqr = std::powf(Vector3::Dot(n, h), 2.0f);
 
-			return aSqr / (PI * std::pow(nhSqr * (aSqr - 1.0f) + 1.0f, 2));
+			return aSqr / (PI * std::powf(nhSqr * (aSqr - 1.0f) + 1.0f, 2));
 		}
 
 
@@ -92,7 +92,7 @@ namespace dae
 			// k = (a + 1)^2 / 8
 
 			const float a = roughness * roughness;
-			const float k = std::pow(a + 1, 2) / 8.0f;
+			const float k = std::powf(a + 1, 2.0f) / 8.0f;
 			const float nDotV = Vector3::Dot(n, v);
 
 			return nDotV / (nDotV * (1.0f - k) + k);
@@ -110,6 +110,6 @@ namespace dae
 		{
 			return GeometryFunction_SchlickGGX(n, v, roughness) * GeometryFunction_SchlickGGX(n, l, roughness); // I think ??
 		}
-
+		
 	}
 }
