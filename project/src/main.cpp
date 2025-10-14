@@ -52,7 +52,7 @@ int main(int argc, char* args[])
 	const auto pTimer = new Timer();
 	const auto pRenderer = new Renderer(pWindow);
 
-	const auto pScene = new Scene_W3(); // NOTE : Ideally make a better scene switching system, but not necessary
+	const auto pScene = new Scene_Triangle_Test_W4(); // NOTE : Ideally make a better scene switching system, but not necessary
 	pScene->Initialize();
 
 	//Start loop

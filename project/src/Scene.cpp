@@ -42,7 +42,12 @@ namespace dae {
 			if (curHit.t < closestHit.t) closestHit = curHit;
 		}
 
-		// TODO : Triangle hitcheck
+		// TODO : Triangle hitcheck without the temporary triangle
+		for (const Triangle& triangle : m_Triangles) {
+			GeometryUtils::HitTest_Triangle(triangle, ray, curHit);
+
+			if (curHit.t < closestHit.t) closestHit = curHit;
+		}
 	}
 
 	bool Scene::DoesHit(const Ray& ray) const
@@ -56,7 +61,14 @@ namespace dae {
 
 		for (const Plane& plane : m_PlaneGeometries) {
 			HitRecord curHit{};
-			if (GeometryUtils::HitTest_Plane(plane, ray, curHit)) return true;
+			if (GeometryUtils::HitTest_Plane(plane, ray, curHit, true)) return true;
+		}
+
+		// TODO : Triangle hitcheck without the temporary triangle
+		// TODO : Fix Shadows with triangles
+		for (const Triangle& triangle : m_Triangles) {
+			HitRecord curHit{};
+			GeometryUtils::HitTest_Triangle(triangle, ray, curHit, true);
 		}
 
 		return false;
@@ -130,7 +142,7 @@ namespace dae {
 #pragma region SCENE W1
 	void Scene_W1::Initialize()
 	{
-		//default: Material id0 >> SolidColor Material (RED)
+		// Materials
 		constexpr unsigned char matId_Solid_Red = 0;
 		const unsigned char matId_Solid_Blue = AddMaterial(new Material_SolidColor{ colors::Blue });
 
@@ -192,6 +204,7 @@ namespace dae {
 		m_Camera.origin = { 0.0f, 1.0f, -5.0f };
 		m_Camera.fovAngle = 45.0f;
 
+		// Materials
 		const unsigned char matLambert_Red = AddMaterial(new Material_Lambert{ colors::Red, 1.0f });
 		const unsigned char matLambert_Blue = AddMaterial(new Material_Lambert{ colors::Blue, 1.0f });
 		const unsigned char matLambertPhong_Blue = AddMaterial(new Material_LambertPhong{ colors::Blue, 1.0f, 1.0f, 60.0f });
@@ -216,6 +229,7 @@ namespace dae {
 		m_Camera.origin = { 0.0f, 3.0f, -9.0f };
 		m_Camera.fovAngle = 45.0f;
 
+		// Materials
 		const auto matCT_GrayRoughMetal		= AddMaterial(new Material_CookTorrence( { 0.972f, 0.960f, 0.951f }, 1.0f, 1.0f));
 		const auto matCT_GrayMediumMetal	= AddMaterial(new Material_CookTorrence( { 0.972f, 0.960f, 0.951f }, 1.0f, 0.6f));
 		const auto matCT_GraySmoothetal		= AddMaterial(new Material_CookTorrence( { 0.972f, 0.960f, 0.951f }, 1.0f, 0.1f));
@@ -246,5 +260,35 @@ namespace dae {
 		AddPointLight({  2.5f, 2.5f, -5.0f }, 50.0f, { 0.34f, 0.47f, 0.68f });
 	}
 #pragma endregion SCENE W3
+
+#pragma region TRIANGLE TEST SCENE W4
+	void Scene_Triangle_Test_W4::Initialize()
+	{
+		m_Camera.origin = { 0.0f, 1.0f, -5.0f };
+		m_Camera.fovAngle = 45.0f;
+
+		// Materials
+		const auto matLambert_GrayBlue	= AddMaterial(new Material_Lambert({ 0.49f, 0.57f, 0.57f }, 1.0f));
+		const auto matLambert_White		= AddMaterial(new Material_Lambert(colors::White, 1.0f));
+
+		// Planes
+		AddPlane({  0.0f,  0.0f, 10.0f }, {  0.0f,  0.0f, -1.0f }, matLambert_GrayBlue); // Back
+		AddPlane({  0.0f,  0.0f,  0.0f }, {  0.0f,  1.0f,  0.0f }, matLambert_GrayBlue); // Bottom
+		AddPlane({  0.0f, 10.0f,  0.0f }, {  0.0f, -1.0f,  0.0f }, matLambert_GrayBlue); // Top
+		AddPlane({  5.0f,  0.0f,  0.0f }, { -1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Right
+		AddPlane({ -5.0f,  0.0f,  0.0f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
+
+		// Triangle (Temporary)
+		Triangle triangle{ { -0.75f, 0.5f, 0.0f }, { -0.75f, 2.0f, 0.0f }, { 0.75f, 0.5f, 0.0f } };
+		triangle.cullMode = TriangleCullMode::NoCulling;
+		triangle.materialIndex = matLambert_White;
+		m_Triangles.push_back(triangle);
+
+		// Lights
+		AddPointLight({  0.0f, 5.0f,  5.0f }, 50.0f, { 1.00f, 0.61f, 0.45f }); // Backlight
+		AddPointLight({ -2.5f, 5.0f, -5.0f }, 70.0f, { 1.00f, 0.80f, 0.45f }); // Frontlight left
+		AddPointLight({  2.5f, 2.5f, -5.0f }, 50.0f, { 0.34f, 0.47f, 0.68f });
+	}
+#pragma endregion TRIANGLE TEST SCENE W4
 
 }
