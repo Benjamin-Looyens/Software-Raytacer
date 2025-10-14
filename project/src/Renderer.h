@@ -24,7 +24,7 @@ namespace dae
 		void CycleLightingMode();
 
 	private:
-		enum class LightingMode
+		enum class LightingMode : uint8_t
 		{
 			ObservedArea,
 			Radiance,

@@ -59,15 +59,16 @@ void Renderer::Render(Scene* pScene) const
 					// TODO : Point vs directional light difference?
 					const Vector3 lightToTarget = light.origin - latestHit.origin;
 					const Vector3 lightToTarget_Normal = lightToTarget.Normalized();
-					const float observedArea = Vector3::Dot(latestHit.normal, lightToTarget_Normal);
 
+					float observedArea = Vector3::Dot(latestHit.normal, lightToTarget_Normal);
 					if (observedArea < 0) continue;
+					observedArea = std::clamp(observedArea, 0.0f, 1.0f);
+
 					if (m_DoShadows && pScene->DoesHit(lightRay)) continue;
 					
 					switch (m_CurMode) {
 					case LightingMode::ObservedArea:
-						finalColor += { 1.0f, 1.0f, 1.0f };
-						finalColor *= std::clamp(observedArea, 0.0f, 1.0f); // This looks consistently wrong
+						finalColor += { observedArea, observedArea, observedArea };
 						break;
 					case LightingMode::Radiance:
 						finalColor += LightUtils::GetRadiance(light, latestHit.origin); // Always has shadows on the object itself for some reason?
@@ -78,7 +79,7 @@ void Renderer::Render(Scene* pScene) const
 					case LightingMode::Combined:
 						finalColor +=	materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction) *
 										LightUtils::GetRadiance(light, latestHit.origin) * 
-										std::clamp(observedArea, 0.0f, 1.0f);
+										observedArea, 0.0f, 1.0f;
 						break;
 					}
 				}
@@ -106,6 +107,6 @@ bool Renderer::SaveBufferToImage() const
 
 void dae::Renderer::CycleLightingMode()
 {
-	m_CurMode = static_cast<LightingMode>((static_cast<int>(m_CurMode) + 1) % static_cast<int>(LightingMode::ModeAmount)); // Yuck
-	//std::cout << "Current Lighting Mode: " << static_cast<int>(m_CurMode) << "\n";
+	// TODO : Implement a smooth way to print out the fact lighting mode changed
+	m_CurMode = static_cast<LightingMode>((static_cast<uint8_t>(m_CurMode) + 1) % static_cast<uint8_t>(LightingMode::ModeAmount)); // Yuck
 }
