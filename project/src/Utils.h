@@ -96,15 +96,11 @@ namespace dae
 		//TRIANGLE HIT-TESTS
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			// TODO : Shadow fix
-			// TODO : Culling implementation
-
 			const Vector3 a = triangle.v1 - triangle.v0;
 			const Vector3 b = triangle.v2 - triangle.v0;
-			const Vector3 normal = Vector3::Cross(a, b).Normalized(); // Do I need to calculate the normal ?
-
-			float backFront = Vector3::Dot(normal, ray.direction);
-			if (ignoreHitRecord) backFront = -backFront;
+			
+			float backFront = Vector3::Dot(triangle.normal, ray.direction);
+			if (ignoreHitRecord) backFront = -backFront; // Potentially some way to collapse into the backFront initialization, so that I can make it const
 			
 			if (AreEqual(backFront, 0.0f)) return false;
 			else if (backFront > 0.0f) {
@@ -117,26 +113,26 @@ namespace dae
 			}
 
 			const Vector3 rayToV0 = triangle.v0 - ray.origin;
-			const float t = Vector3::Dot(rayToV0, normal) / Vector3::Dot(ray.direction, normal);
+			const float t = Vector3::Dot(rayToV0, triangle.normal) / Vector3::Dot(ray.direction, triangle.normal);
 
 			if (t < ray.min || t > ray.max) return false;
 
 			const Vector3 p = ray.origin + (ray.direction * t); // Intersection point
 			
 			const Vector3 cV0 = p - triangle.v0;
-			if (Vector3::Dot(normal, Vector3::Cross(a, cV0)) < 0) return false;
+			if (Vector3::Dot(triangle.normal, Vector3::Cross(a, cV0)) < 0) return false;
 
 			const Vector3 eV1 = triangle.v2 - triangle.v1;
 			const Vector3 cV1 = p - triangle.v1;
-			if (Vector3::Dot(normal, Vector3::Cross(eV1, cV1)) < 0) return false;
+			if (Vector3::Dot(triangle.normal, Vector3::Cross(eV1, cV1)) < 0) return false;
 
 			const Vector3 eV2 = triangle.v0 - triangle.v2;
 			const Vector3 cV2 = p - triangle.v2;
-			if (Vector3::Dot(normal, Vector3::Cross(eV2, cV2)) < 0) return false;
+			if (Vector3::Dot(triangle.normal, Vector3::Cross(eV2, cV2)) < 0) return false;
 
 			if (!ignoreHitRecord) {
 				hitRecord.t = t;
-				hitRecord.normal = normal;
+				hitRecord.normal = triangle.normal;
 				hitRecord.materialIndex = triangle.materialIndex;
 				hitRecord.didHit = true;
 				hitRecord.origin = p;
