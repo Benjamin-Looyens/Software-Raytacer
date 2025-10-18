@@ -20,7 +20,7 @@ namespace dae
 
 		void Render(Scene* pScene) const;
 		bool SaveBufferToImage() const;
-		void ToggleShadows() { m_DoShadows = !m_DoShadows; }
+		void ToggleShadows();
 		void CycleLightingMode();
 
 	private:

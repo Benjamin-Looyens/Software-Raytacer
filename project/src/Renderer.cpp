@@ -106,6 +106,15 @@ bool Renderer::SaveBufferToImage() const
 	return SDL_SaveBMP(m_pBuffer, "RayTracing_Buffer.bmp");
 }
 
+void dae::Renderer::ToggleShadows()
+{
+	m_DoShadows = !m_DoShadows;
+
+	std::cout << "Shadows have been turned ";
+	if (m_DoShadows) std::cout << "on.\n";
+	else std::cout << "off.\n";
+}
+
 void dae::Renderer::CycleLightingMode()
 {
 	// TODO : Implement a smooth way to print out the fact lighting mode changed

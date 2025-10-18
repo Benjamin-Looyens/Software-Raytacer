@@ -96,11 +96,8 @@ namespace dae
 		//TRIANGLE HIT-TESTS
 		inline bool HitTest_Triangle(const Triangle& triangle, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			// if (e x p) dot n < 0  -> return false
-			// v = vertex
-			// e = v_next - v_current
-			// p = P - v
-			// P = ray.origin + (viewRay * t)
+			// TODO : Shadow fix
+			// TODO : Culling implementation
 
 			const Vector3 a = triangle.v1 - triangle.v0;
 			const Vector3 b = triangle.v2 - triangle.v0;
