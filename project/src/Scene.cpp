@@ -65,10 +65,9 @@ namespace dae {
 		}
 
 		// TODO : Triangle hitcheck without the temporary triangle
-		// TODO : Fix Shadows with triangles
 		for (const Triangle& triangle : m_Triangles) {
 			HitRecord curHit{};
-			GeometryUtils::HitTest_Triangle(triangle, ray, curHit, true);
+			if (GeometryUtils::HitTest_Triangle(triangle, ray, curHit, true)) return true;
 		}
 
 		return false;
