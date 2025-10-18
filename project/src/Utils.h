@@ -103,7 +103,18 @@ namespace dae
 			const Vector3 b = triangle.v2 - triangle.v0;
 			const Vector3 normal = Vector3::Cross(a, b).Normalized(); // Do I need to calculate the normal ?
 
-			if (Vector3::Dot(normal, ray.direction) == 0.0f) return false; // use AreEqual?
+			float backFront = Vector3::Dot(normal, ray.direction);
+			if (ignoreHitRecord) backFront = -backFront;
+			
+			if (AreEqual(backFront, 0.0f)) return false;
+			else if (backFront > 0.0f) {
+				// Hit the back face
+				if (triangle.cullMode == TriangleCullMode::BackFaceCulling) return false;
+			}
+			else {
+				// Hit the front face
+				if (triangle.cullMode == TriangleCullMode::FrontFaceCulling) return false;
+			}
 
 			const Vector3 rayToV0 = triangle.v0 - ray.origin;
 			const float t = Vector3::Dot(rayToV0, normal) / Vector3::Dot(ray.direction, normal);

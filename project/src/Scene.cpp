@@ -279,7 +279,7 @@ namespace dae {
 
 		// Triangle (Temporary)
 		Triangle triangle{ { -0.75f, 0.5f, 0.0f }, { -0.75f, 2.0f, 0.0f }, { 0.75f, 0.5f, 0.0f } };
-		triangle.cullMode = TriangleCullMode::NoCulling;
+		triangle.cullMode = TriangleCullMode::BackFaceCulling;
 		triangle.materialIndex = matLambert_White;
 		m_Triangles.push_back(triangle);
 
