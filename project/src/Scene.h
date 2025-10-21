@@ -60,8 +60,6 @@ namespace dae
 		Light* AddDirectionalLight(const Vector3& direction, float intensity, const ColorRGB& color);
 		unsigned char AddMaterial(Material* pMaterial);
 
-		// TEMPORARY
-		std::vector<Triangle> m_Triangles{};
 	};
 
 	//+++++++++++++++++++++++++++++++++++++++++

@@ -42,9 +42,8 @@ namespace dae {
 			if (curHit.t < closestHit.t) closestHit = curHit;
 		}
 
-		// TODO : Triangle hitcheck without the temporary triangle
-		for (const Triangle& triangle : m_Triangles) {
-			GeometryUtils::HitTest_Triangle(triangle, ray, curHit);
+		for (const TriangleMesh& mesh : m_TriangleMeshGeometries) {
+			GeometryUtils::HitTest_TriangleMesh(mesh, ray, curHit);
 
 			if (curHit.t < closestHit.t) closestHit = curHit;
 		}
@@ -64,10 +63,9 @@ namespace dae {
 			if (GeometryUtils::HitTest_Plane(plane, ray, curHit, true)) return true;
 		}
 
-		// TODO : Triangle hitcheck without the temporary triangle
-		for (const Triangle& triangle : m_Triangles) {
+		for (const TriangleMesh& mesh : m_TriangleMeshGeometries) {
 			HitRecord curHit{};
-			if (GeometryUtils::HitTest_Triangle(triangle, ray, curHit, true)) return true;
+			if (GeometryUtils::HitTest_TriangleMesh(mesh, ray, curHit, true)) return true;
 		}
 
 		return false;
@@ -278,10 +276,21 @@ namespace dae {
 		AddPlane({ -5.0f,  0.0f,  0.0f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
 
 		// Triangle (Temporary)
-		Triangle triangle{ { -0.75f, 0.5f, 0.0f }, { -0.75f, 2.0f, 0.0f }, { 0.75f, 0.5f, 0.0f } };
-		triangle.cullMode = TriangleCullMode::NoCulling;
-		triangle.materialIndex = matLambert_White;
-		m_Triangles.push_back(triangle);
+		//Triangle triangle{ { -0.75f, 0.5f, 0.0f }, { -0.75f, 2.0f, 0.0f }, { 0.75f, 0.5f, 0.0f } };
+		//triangle.cullMode = TriangleCullMode::NoCulling;
+		//triangle.materialIndex = matLambert_White;
+		//m_Triangles.push_back(triangle);
+
+		// Triangle mesh
+		const auto triangleMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		triangleMesh->positions = { { -0.75f, -1.0f, 0.0f }, { -0.75f, 1.0f, 0.0f }, { 0.75f, 1.0f, 1.0f }, { 0.75f, -1.0f, 0.0f } };
+		triangleMesh->indices = {
+			0, 1, 2, // tri 1
+			0, 2, 3  // tri 2
+		};
+
+		triangleMesh->CalculateNormals();
+		triangleMesh->UpdateTransforms();
 
 		// Lights
 		AddPointLight({  0.0f, 5.0f,  5.0f }, 50.0f, { 1.00f, 0.61f, 0.45f }); // Backlight

@@ -150,8 +150,25 @@ namespace dae
 #pragma region TriangeMesh HitTest
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
-			//todo W5
-			throw std::runtime_error("Not Implemented Yet");
+			const size_t maxTri{ mesh.indices.size() / 3 };
+			for (int triNum{ }; triNum < maxTri; triNum++) {
+				Triangle tri;
+				tri.v0 = mesh.positions[mesh.indices[triNum * 3 + 0]];
+				tri.v1 = mesh.positions[mesh.indices[triNum * 3 + 1]];
+				tri.v2 = mesh.positions[mesh.indices[triNum * 3 + 2]];
+				tri.normal = mesh.normals[triNum];
+				tri.cullMode = mesh.cullMode;
+				tri.materialIndex = mesh.materialIndex;
+
+				HitRecord temp = hitRecord;
+				if (HitTest_Triangle(tri, ray, temp, ignoreHitRecord)) {
+					if (ignoreHitRecord) return true;
+					else if (temp.t < hitRecord.t) hitRecord = temp;
+				}
+			}
+
+			if (hitRecord.didHit) return true;
+
 			return false;
 		}
 
