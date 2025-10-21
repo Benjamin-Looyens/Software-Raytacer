@@ -152,7 +152,8 @@ namespace dae
 			std::transform(begin(positions), end(positions), begin(transformedPositions),
 				[transform](const Vector3& vec) { return transform.TransformPoint(vec); }
 			);
-
+			// TODO : Check lambda [transform], whether that copies it?
+		
 			// Transform Normals (normals > transformedNormals)
 			transformedNormals.resize(normals.size());
 			std::transform(begin(normals), end(normals), begin(transformedNormals),

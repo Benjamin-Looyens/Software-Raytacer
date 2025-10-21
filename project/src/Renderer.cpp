@@ -1,3 +1,11 @@
+//Defines
+#define PARALLEL_EXECUTION
+
+//Standard includes
+#ifdef PARALLEL_EXECUTION
+#include <execution>
+#endif
+
 //External includes
 #include "SDL.h"
 #include "SDL_surface.h"
@@ -30,8 +38,19 @@ void Renderer::Render(Scene* pScene) const
 	const Matrix& camToWorld = camera.CalculateCameraToWorld();
 
 	const uint32_t pixelCount{ static_cast<uint32_t>(m_Width * m_Height) };
+
+#ifdef PARALLEL_EXECUTION
+		std::vector<uint32_t> pixelIndices{};
+		pixelIndices.reserve(pixelCount);
+		for (uint32_t index{}; index < pixelCount; ++index) pixelIndices.emplace_back(index);
+
+		std::for_each(std::execution::par, begin(pixelIndices), end(pixelIndices),
+			[&](const uint32_t pixel) { RenderPixel(pScene, pixel, fov, aspectRatio, camToWorld, camera.origin); }
+		);
+#else
 	for (uint32_t pixel{}; pixel < pixelCount; ++pixel)
 		RenderPixel(pScene, pixel, fov, aspectRatio, camToWorld, camera.origin);
+#endif
 
 	//@END
 	//Update SDL Surface
@@ -127,3 +146,4 @@ void dae::Renderer::CycleLightingMode()
 	// TODO : Implement a smooth way to print out the fact lighting mode changed
 	m_CurMode = static_cast<LightingMode>((static_cast<uint8_t>(m_CurMode) + 1) % static_cast<uint8_t>(LightingMode::ModeAmount)); // Yuck
 }
+
