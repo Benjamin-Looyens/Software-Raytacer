@@ -275,21 +275,11 @@ namespace dae {
 		AddPlane({  5.0f,  0.0f,  0.0f }, { -1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Right
 		AddPlane({ -5.0f,  0.0f,  0.0f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
 
-		// Triangle (Temporary)
-		//Triangle triangle{ { -0.75f, 0.5f, 0.0f }, { -0.75f, 2.0f, 0.0f }, { 0.75f, 0.5f, 0.0f } };
-		//triangle.cullMode = TriangleCullMode::NoCulling;
-		//triangle.materialIndex = matLambert_White;
-		//m_Triangles.push_back(triangle);
-
 		// Triangle mesh
 		m_pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-		m_pMesh->positions = { { -0.75f, -1.0f, 0.0f }, { -0.75f, 1.0f, 0.0f }, { 0.75f, 1.0f, 1.0f }, { 0.75f, -1.0f, 0.0f } };
-		m_pMesh->indices = {
-			0, 1, 2, // tri 1
-			0, 2, 3  // tri 2
-		};
-
-		m_pMesh->CalculateNormals();
+		Utils::ParseOBJ("Resources/simple_cube.obj", m_pMesh->positions, m_pMesh->normals, m_pMesh->indices);
+		m_pMesh->Scale({ 0.7f, 0.7f, 0.7f });
+		m_pMesh->Translate({ 0.0f, 1.5f, 0.0f });
 		m_pMesh->UpdateTransforms();
 
 		// Lights
