@@ -153,10 +153,10 @@ namespace dae
 			const size_t maxTri{ mesh.indices.size() / 3 };
 			for (int triNum{ }; triNum < maxTri; triNum++) {
 				Triangle tri;
-				tri.v0 = mesh.positions[mesh.indices[triNum * 3 + 0]];
-				tri.v1 = mesh.positions[mesh.indices[triNum * 3 + 1]];
-				tri.v2 = mesh.positions[mesh.indices[triNum * 3 + 2]];
-				tri.normal = mesh.normals[triNum];
+				tri.v0 = mesh.transformedPositions[mesh.indices[triNum * 3 + 0]];
+				tri.v1 = mesh.transformedPositions[mesh.indices[triNum * 3 + 1]];
+				tri.v2 = mesh.transformedPositions[mesh.indices[triNum * 3 + 2]];
+				tri.normal = mesh.transformedNormals[triNum];
 				tri.cullMode = mesh.cullMode;
 				tri.materialIndex = mesh.materialIndex;
 

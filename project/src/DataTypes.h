@@ -123,21 +123,9 @@ namespace dae
 
 		void CalculateNormals()
 		{
-			// Construct triangle based on positions & indices:
-			//		v0 = positions[indices[triangleNumber * 3 + 0;
-			//		v1 = positions[indices[triangleNumber * 3 + 1;
-			//		v2 = positions[indices[triangleNumber * 3 + 2;
-			// 
-			// Then calculate normal for that triangle: 
-			//		const Vector3 a = triangle.v1 - triangle.v0;
-			//		const Vector3 b = triangle.v2 - triangle.v0;
-			//		const Vector3 normal = Vector3::Cross(a, b).Normalized();
-
-			// TODO : Calculate triangle count
 			const size_t maxTri{ indices.size() / 3 };
 			normals.resize(maxTri);
 
-			// TODO : probably do like normals.resize(maxTri) so that i dont overwrite
 			for (int triNum{ }; triNum < maxTri; triNum++) {
 				const Vector3 v0 = positions[indices[triNum * 3 + 0]];
 				const Vector3 v1 = positions[indices[triNum * 3 + 1]];
@@ -153,20 +141,19 @@ namespace dae
 
 		void UpdateTransforms()
 		{
-			//Calculate Final Transform 
-			//const auto finalTransform = ...
+			// Slides say:
+			// Make sure you’re code is ‘optimized’, make use of vector::reserve & vector::emplace_back
 
+			// Calculate Final Transform 
 			const Matrix transform = translationTransform * rotationTransform * scaleTransform;
 			
-			//Transform Positions (positions > transformedPositions)
-			//...
+			// Transform Positions (positions > transformedPositions)
 			transformedPositions.resize(positions.size());
 			std::transform(begin(positions), end(positions), begin(transformedPositions),
 				[transform](const Vector3& vec) { return transform.TransformPoint(vec); }
 			);
 
-			//Transform Normals (normals > transformedNormals)
-			//...
+			// Transform Normals (normals > transformedNormals)
 			transformedNormals.resize(normals.size());
 			std::transform(begin(normals), end(normals), begin(transformedNormals),
 				[transform](const Vector3& n) { return transform.TransformVector(n); }
