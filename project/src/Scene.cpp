@@ -282,24 +282,28 @@ namespace dae {
 		//m_Triangles.push_back(triangle);
 
 		// Triangle mesh
-		const auto triangleMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
-		triangleMesh->positions = { { -0.75f, -1.0f, 0.0f }, { -0.75f, 1.0f, 0.0f }, { 0.75f, 1.0f, 1.0f }, { 0.75f, -1.0f, 0.0f } };
-		triangleMesh->indices = {
+		m_pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		m_pMesh->positions = { { -0.75f, -1.0f, 0.0f }, { -0.75f, 1.0f, 0.0f }, { 0.75f, 1.0f, 1.0f }, { 0.75f, -1.0f, 0.0f } };
+		m_pMesh->indices = {
 			0, 1, 2, // tri 1
 			0, 2, 3  // tri 2
 		};
 
-		triangleMesh->CalculateNormals();
-
-		triangleMesh->Translate({ 0.0f, 1.5f, 0.0f });
-		triangleMesh->RotateY(45);
-
-		triangleMesh->UpdateTransforms();
+		m_pMesh->CalculateNormals();
+		m_pMesh->UpdateTransforms();
 
 		// Lights
 		AddPointLight({  0.0f, 5.0f,  5.0f }, 50.0f, { 1.00f, 0.61f, 0.45f }); // Backlight
 		AddPointLight({ -2.5f, 5.0f, -5.0f }, 70.0f, { 1.00f, 0.80f, 0.45f }); // Frontlight left
 		AddPointLight({  2.5f, 2.5f, -5.0f }, 50.0f, { 0.34f, 0.47f, 0.68f });
+	}
+
+	void Scene_Triangle_Test_W4::Update(dae::Timer* pTimer)
+	{
+		Scene::Update(pTimer);
+
+		m_pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		m_pMesh->UpdateTransforms();
 	}
 #pragma endregion TRIANGLE TEST SCENE W4
 

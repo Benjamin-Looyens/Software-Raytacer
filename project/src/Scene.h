@@ -140,5 +140,9 @@ namespace dae
 		Scene_Triangle_Test_W4& operator=(Scene_Triangle_Test_W4&&) noexcept = delete;
 
 		void Initialize() override;
+		void Update(dae::Timer* pTimer) override;
+
+	private:
+		TriangleMesh* m_pMesh;
 	};
 }
