@@ -145,4 +145,24 @@ namespace dae
 	private:
 		TriangleMesh* m_pMesh;
 	};
+
+	//+++++++++++++++++++++++++++++++++++++++++
+	//WEEK 4 Reference Scene
+	class Scene_W4_Reference final : public Scene
+	{
+	public:
+		Scene_W4_Reference() = default;
+		~Scene_W4_Reference() override = default;
+
+		Scene_W4_Reference(const Scene_W4_Reference&) = delete;
+		Scene_W4_Reference(Scene_W4_Reference&&) noexcept = delete;
+		Scene_W4_Reference& operator=(const Scene_W4_Reference&) = delete;
+		Scene_W4_Reference& operator=(Scene_W4_Reference&&) noexcept = delete;
+
+		void Initialize() override;
+		void Update(dae::Timer* pTimer) override;
+
+	private:
+		TriangleMesh* m_pMeshes[3];
+	};
 }
