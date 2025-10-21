@@ -145,7 +145,7 @@ namespace dae
 			// Make sure you’re code is ‘optimized’, make use of vector::reserve & vector::emplace_back
 
 			// Calculate Final Transform 
-			const Matrix transform = translationTransform * rotationTransform * scaleTransform;
+			const Matrix transform = scaleTransform * rotationTransform * translationTransform;
 			
 			// Transform Positions (positions > transformedPositions)
 			transformedPositions.resize(positions.size());
