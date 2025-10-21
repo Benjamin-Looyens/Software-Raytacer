@@ -366,4 +366,44 @@ namespace dae {
 	}
 #pragma endregion W4 REFERENCE SCENE
 
+#pragma region W4 BUNNY SCENE
+	void Scene_W4_Bunny::Initialize()
+	{
+		sceneName = "Bunny Scene";
+		m_Camera.origin = { 0.0f, 3.0f, -9.0f };
+		m_Camera.fovAngle = 45.0f;
+
+		// Materials
+		const auto matLambert_GrayBlue	= AddMaterial(new Material_Lambert( { 0.49f, 0.57f, 0.57f }, 1.0f));
+		const auto matLambert_White		= AddMaterial(new Material_Lambert(colors::White, 1.0f));
+
+		// Planes
+		AddPlane({  0.0f,  0.0f, 10.0f }, {  0.0f,  0.0f, -1.0f }, matLambert_GrayBlue); // Back
+		AddPlane({  0.0f,  0.0f,  0.0f }, {  0.0f,  1.0f,  0.0f }, matLambert_GrayBlue); // Bottom
+		AddPlane({  0.0f, 10.0f,  0.0f }, {  0.0f, -1.0f,  0.0f }, matLambert_GrayBlue); // Top
+		AddPlane({  5.0f,  0.0f,  0.0f }, { -1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Right
+		AddPlane({ -5.0f,  0.0f,  0.0f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
+
+		// Bunny mesh
+		m_pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		Utils::ParseOBJ("Resources/lowpoly_bunny.obj", m_pMesh->positions, m_pMesh->normals, m_pMesh->indices);
+		m_pMesh->Scale({ 2.0f, 2.0f, 2.0f });
+		//m_pMesh->Translate({ 0.0f, 1.5f, 0.0f });
+		m_pMesh->UpdateTransforms();
+
+		// Lights
+		AddPointLight({ 0.0f, 5.0f,  5.0f }, 50.0f, { 1.00f, 0.61f, 0.45f }); // Backlight
+		AddPointLight({ -2.5f, 5.0f, -5.0f }, 70.0f, { 1.00f, 0.80f, 0.45f }); // Frontlight left
+		AddPointLight({ 2.5f, 2.5f, -5.0f }, 50.0f, { 0.34f, 0.47f, 0.68f });
+	}
+
+	void Scene_W4_Bunny::Update(dae::Timer* pTimer)
+	{
+		Scene::Update(pTimer);
+
+		m_pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		m_pMesh->UpdateTransforms();
+	}
+#pragma endregion W4 BUNNY SCENE
+
 }
