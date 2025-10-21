@@ -6,6 +6,9 @@ struct SDL_Surface;
 
 namespace dae
 {
+	struct Matrix;
+	struct Vector3;
+
 	class Scene;
 	class Renderer final
 	{
@@ -19,6 +22,7 @@ namespace dae
 		Renderer& operator=(Renderer&&) noexcept = delete;
 
 		void Render(Scene* pScene) const;
+		void RenderPixel(const Scene* pScene, uint32_t pixelIndex, float fov, float aspectRatio, const Matrix& cameraToWorld, const Vector3& cameraOrigin) const; // Cant I just pass the camera?
 		bool SaveBufferToImage() const;
 		void ToggleShadows();
 		void CycleLightingMode();
