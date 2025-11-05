@@ -53,8 +53,8 @@ int main(int argc, char* args[])
 	const auto pRenderer = new Renderer(pWindow);
 
 	// NOTE : Ideally make a better scene switching system, but not necessary
-	const auto pScene = new Scene_W4_Reference(); 
-	//const auto pScene = new Scene_W4_Bunny();
+	//const auto pScene = new Scene_W4_Reference(); 
+	const auto pScene = new Scene_W4_Bunny();
 	pScene->Initialize();
 
 	//Start loop

@@ -86,6 +86,8 @@ void dae::Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float 
 			Ray lightRay{ latestHit.origin, light.origin - latestHit.origin, 0.001f };
 			lightRay.max = lightRay.direction.Normalize();
 
+			if (m_DoShadows && pScene->DoesHit(lightRay)) continue;
+
 			// NOTE : Can I calculate whether a light has any effect before the other calculations?
 			// TODO : Point vs directional light difference?
 			const Vector3 lightToTarget = light.origin - latestHit.origin;
@@ -94,8 +96,6 @@ void dae::Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float 
 			float observedArea = Vector3::Dot(latestHit.normal, lightToTarget_Normal);
 			if (observedArea < 0) continue;
 			observedArea = std::clamp(observedArea, 0.0f, 1.0f);
-
-			if (m_DoShadows && pScene->DoesHit(lightRay)) continue;
 
 			switch (m_CurMode) {
 			case LightingMode::ObservedArea:
@@ -112,7 +112,7 @@ void dae::Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float 
 			case LightingMode::Combined:
 				finalColor += materials[latestHit.materialIndex]->Shade(latestHit, lightToTarget_Normal, -viewRay.direction) *
 					LightUtils::GetRadiance(light, latestHit.origin) *
-					observedArea, 0.0f, 1.0f;
+					observedArea;
 				break;
 			}
 		}

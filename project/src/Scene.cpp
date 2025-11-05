@@ -385,10 +385,11 @@ namespace dae {
 		AddPlane({ -5.0f,  0.0f,  0.0f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
 
 		// Bunny mesh
-		m_pMesh = AddTriangleMesh(TriangleCullMode::NoCulling, matLambert_White);
+		m_pMesh = AddTriangleMesh(TriangleCullMode::BackFaceCulling, matLambert_White);
 		Utils::ParseOBJ("Resources/lowpoly_bunny.obj", m_pMesh->positions, m_pMesh->normals, m_pMesh->indices);
+		m_pMesh->CalculateNormals();
 		m_pMesh->Scale({ 2.0f, 2.0f, 2.0f });
-		//m_pMesh->Translate({ 0.0f, 1.5f, 0.0f });
+		m_pMesh->RotateY(PI);
 		m_pMesh->UpdateTransforms();
 
 		// Lights
@@ -401,8 +402,8 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
-		m_pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
-		m_pMesh->UpdateTransforms();
+		//m_pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
+		//m_pMesh->UpdateTransforms();
 	}
 #pragma endregion W4 BUNNY SCENE
 

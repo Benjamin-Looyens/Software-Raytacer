@@ -167,9 +167,7 @@ namespace dae
 				}
 			}
 
-			if (hitRecord.didHit) return true;
-
-			return false;
+			return hitRecord.didHit;
 		}
 
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)

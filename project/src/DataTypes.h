@@ -152,12 +152,16 @@ namespace dae
 			std::transform(begin(positions), end(positions), begin(transformedPositions),
 				[transform](const Vector3& vec) { return transform.TransformPoint(vec); }
 			);
+
 			// TODO : Check lambda [transform], whether that copies it?
 		
 			// Transform Normals (normals > transformedNormals)
+			const Matrix inv = Matrix::Inverse(transform);
+			const Matrix invTransp = Matrix::Transpose(inv);
+
 			transformedNormals.resize(normals.size());
 			std::transform(begin(normals), end(normals), begin(transformedNormals),
-				[transform](const Vector3& n) { return transform.TransformVector(n); }
+				[invTransp](const Vector3& n) { return invTransp.TransformVector(n).Normalized(); }
 			);
 		}
 	};
