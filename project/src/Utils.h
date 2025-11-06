@@ -147,9 +147,35 @@ namespace dae
 			return HitTest_Triangle(triangle, ray, temp, true);
 		}
 #pragma endregion
+#pragma region AABB Slabtest
+		inline bool SlabTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray)
+		{
+			float tx1 = (mesh.transformedMin.x - ray.origin.x) / ray.direction.x;
+			float tx2 = (mesh.transformedMax.x - ray.origin.x) / ray.direction.x;
+
+			float tmin = std::min(tx1, tx2);
+			float tmax = std::max(tx1, tx2);
+
+			float ty1 = (mesh.transformedMin.y - ray.origin.y) / ray.direction.y;
+			float ty2 = (mesh.transformedMax.y - ray.origin.y) / ray.direction.y;
+
+			tmin = std::max(tmin, std::min(ty1, ty2));
+			tmax = std::min(tmax, std::max(ty1, ty2));
+
+			float tz1 = (mesh.transformedMin.z - ray.origin.z) / ray.direction.z;
+			float tz2 = (mesh.transformedMax.z - ray.origin.z) / ray.direction.z;
+
+			tmin = std::max(tmin, std::min(tz1, tz2));
+			tmax = std::min(tmax, std::max(tz1, tz2));
+
+			return tmax > 0 && tmax >= tmin;
+		}
+#pragma endregion AABB Slabtest
 #pragma region TriangeMesh HitTest
 		inline bool HitTest_TriangleMesh(const TriangleMesh& mesh, const Ray& ray, HitRecord& hitRecord, bool ignoreHitRecord = false)
 		{
+			if (!SlabTest_TriangleMesh(mesh, ray)) return false;
+
 			const size_t maxTri{ mesh.indices.size() / 3 };
 			for (int triNum{ }; triNum < maxTri; triNum++) {
 				Triangle tri;
@@ -175,8 +201,8 @@ namespace dae
 			HitRecord temp{};
 			return HitTest_TriangleMesh(mesh, ray, temp, true);
 		}
-#pragma endregion
 	}
+#pragma endregion
 
 	namespace LightUtils
 	{

@@ -60,6 +60,9 @@ namespace dae
 		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, TriangleCullMode _cullMode) :
 			positions(_positions), indices(_indices), cullMode(_cullMode)
 		{
+			// Calculate AABB
+			UpdateAABB();
+
 			//Calculate Normals
 			CalculateNormals();
 
@@ -70,6 +73,7 @@ namespace dae
 		TriangleMesh(const std::vector<Vector3>& _positions, const std::vector<int>& _indices, const std::vector<Vector3>& _normals, TriangleCullMode _cullMode) :
 			positions(_positions), indices(_indices), normals(_normals), cullMode(_cullMode)
 		{
+			UpdateAABB();
 			UpdateTransforms();
 		}
 
@@ -83,6 +87,13 @@ namespace dae
 		Matrix rotationTransform{};
 		Matrix translationTransform{};
 		Matrix scaleTransform{};
+
+		// AABB data
+		Vector3 min;
+		Vector3 max;
+
+		Vector3 transformedMin;
+		Vector3 transformedMax;
 
 		std::vector<Vector3> transformedPositions{};
 		std::vector<Vector3> transformedNormals{};
@@ -117,8 +128,60 @@ namespace dae
 			normals.push_back(triangle.normal);
 
 			//Not ideal, but making sure all vertices are updated
-			if (!ignoreTransformUpdate)
+			if (!ignoreTransformUpdate) {
+				UpdateAABB();
 				UpdateTransforms();
+			}
+		}
+
+		void UpdateAABB()
+		{
+			if (positions.size() == 0) return;
+
+			min = positions[0];
+			max = positions[0];
+
+			for (const Vector3& pos : positions) {
+				min = Vector3::Min(pos, min);
+				max = Vector3::Max(pos, max);
+			}
+		}
+
+		void UpdateTransformedAABB(const Matrix& transform)
+		{
+			Vector3 tMinAABB = transform.TransformPoint(min);
+			Vector3 tMaxAABB = tMinAABB;
+
+			Vector3 tAABB = transform.TransformPoint(max.x, min.y, min.z);
+			tMinAABB = Vector3::Min(tAABB, tMinAABB);
+			tMaxAABB = Vector3::Max(tAABB, tMaxAABB);
+
+			tAABB = transform.TransformPoint(max.x, min.y, max.z);
+			tMinAABB = Vector3::Min(tAABB, tMinAABB);
+			tMaxAABB = Vector3::Max(tAABB, tMaxAABB);
+
+			tAABB = transform.TransformPoint(min.x, min.y, max.z);
+			tMinAABB = Vector3::Min(tAABB, tMinAABB);
+			tMaxAABB = Vector3::Max(tAABB, tMaxAABB);
+
+			tAABB = transform.TransformPoint(min.x, max.y, min.z);
+			tMinAABB = Vector3::Min(tAABB, tMinAABB);
+			tMaxAABB = Vector3::Max(tAABB, tMaxAABB);
+
+			tAABB = transform.TransformPoint(max.x, max.y, min.z);
+			tMinAABB = Vector3::Min(tAABB, tMinAABB);
+			tMaxAABB = Vector3::Max(tAABB, tMaxAABB);
+
+			tAABB = transform.TransformPoint(max);
+			tMinAABB = Vector3::Min(tAABB, tMinAABB);
+			tMaxAABB = Vector3::Max(tAABB, tMaxAABB);
+
+			tAABB = transform.TransformPoint(min.x, max.y, max.z);
+			tMinAABB = Vector3::Min(tAABB, tMinAABB);
+			tMaxAABB = Vector3::Max(tAABB, tMaxAABB);
+
+			transformedMin = tMinAABB;
+			transformedMax = tMaxAABB;
 		}
 
 		void CalculateNormals()
@@ -147,7 +210,7 @@ namespace dae
 
 			// Calculate Final Transform 
 			const Matrix transform = scaleTransform * rotationTransform * translationTransform;
-			
+
 			// Transform Positions (positions > transformedPositions)
 			transformedPositions.resize(positions.size());
 			std::transform(begin(positions), end(positions), begin(transformedPositions),
@@ -162,6 +225,9 @@ namespace dae
 			std::transform(begin(normals), end(normals), begin(transformedNormals),
 				[&invTransp](const Vector3& n) { return invTransp.TransformVector(n).Normalized(); }
 			);
+
+			// Calculate transformed AABB
+			UpdateTransformedAABB(transform);
 		}
 	};
 #pragma endregion
