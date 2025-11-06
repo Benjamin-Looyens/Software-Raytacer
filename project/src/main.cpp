@@ -5,6 +5,7 @@
 
 //Standard includes
 #include <iostream>
+#include <vector>
 
 //Project includes
 #include "Timer.h"
@@ -52,10 +53,13 @@ int main(int argc, char* args[])
 	const auto pTimer = new Timer();
 	const auto pRenderer = new Renderer(pWindow);
 
-	// NOTE : Ideally make a better scene switching system, but not necessary
-	//const auto pScene = new Scene_W4_Reference(); 
-	const auto pScene = new Scene_W4_Bunny();
-	pScene->Initialize();
+	std::vector<Scene*> pScenes{ new Scene_W4_Reference(), new Scene_W4_Bunny() };
+	size_t curSceneIdx = 0;
+
+	// HACK : Can I reuse some stuff from the scenes?
+	// For example maybe I can reuse camera?
+	for (Scene* pScene : pScenes)
+		pScene->Initialize();
 
 	//Start loop
 	pTimer->Start();
@@ -84,15 +88,19 @@ int main(int argc, char* args[])
 					pRenderer->ToggleShadows();
 				if (e.key.keysym.scancode == SDL_SCANCODE_F3)
 					pRenderer->CycleLightingMode();
+				if (e.key.keysym.scancode == SDL_SCANCODE_Z)
+					curSceneIdx = (curSceneIdx + 1) % pScenes.size();
 				break;
 			}
 		}
 
+		const auto& pCurScene = pScenes[curSceneIdx];
+
 		//--------- Update ---------
-		pScene->Update(pTimer);
+		pCurScene->Update(pTimer);
 
 		//--------- Render ---------
-		pRenderer->Render(pScene);
+		pRenderer->Render(pCurScene);
 
 		//--------- Timer ---------
 		pTimer->Update();
@@ -116,7 +124,8 @@ int main(int argc, char* args[])
 	pTimer->Stop();
 
 	//Shutdown "framework"
-	delete pScene;
+	for (Scene* pScene : pScenes)
+		delete pScene;
 	delete pRenderer;
 	delete pTimer;
 

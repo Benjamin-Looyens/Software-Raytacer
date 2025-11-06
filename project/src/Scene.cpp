@@ -407,8 +407,11 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
-		//m_pMesh->RotateY(PI_DIV_2 * pTimer->GetTotal());
-		//m_pMesh->UpdateTransforms();
+		//const float yawAngle = PI_DIV_2 * pTimer->GetTotal();
+		const float yawAngle = (cos(pTimer->GetTotal()) + 1.0f) / 2.0f * PI_2;
+		
+		m_pMesh->RotateY(yawAngle);
+		m_pMesh->UpdateTransforms();
 	}
 #pragma endregion W4 BUNNY SCENE
 
