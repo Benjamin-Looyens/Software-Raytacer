@@ -155,12 +155,14 @@ namespace dae
 
 			float tmin = std::min(tx1, tx2);
 			float tmax = std::max(tx1, tx2);
+			if (tmax < tmin) return false;
 
 			float ty1 = (mesh.transformedMin.y - ray.origin.y) / ray.direction.y;
 			float ty2 = (mesh.transformedMax.y - ray.origin.y) / ray.direction.y;
 
 			tmin = std::max(tmin, std::min(ty1, ty2));
 			tmax = std::min(tmax, std::max(ty1, ty2));
+			if (tmax < tmin) return false;
 
 			float tz1 = (mesh.transformedMin.z - ray.origin.z) / ray.direction.z;
 			float tz2 = (mesh.transformedMax.z - ray.origin.z) / ray.direction.z;
