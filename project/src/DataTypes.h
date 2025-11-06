@@ -141,6 +141,7 @@ namespace dae
 
 		void UpdateTransforms()
 		{
+			// TODO: Check semantics between std::emplace_back & stuff
 			// Slides say:
 			// Make sure you’re code is ‘optimized’, make use of vector::reserve & vector::emplace_back
 
@@ -150,18 +151,16 @@ namespace dae
 			// Transform Positions (positions > transformedPositions)
 			transformedPositions.resize(positions.size());
 			std::transform(begin(positions), end(positions), begin(transformedPositions),
-				[transform](const Vector3& vec) { return transform.TransformPoint(vec); }
+				[&transform](const Vector3& vec) { return transform.TransformPoint(vec); }
 			);
 
-			// TODO : Check lambda [transform], whether that copies it?
-		
 			// Transform Normals (normals > transformedNormals)
 			const Matrix inv = Matrix::Inverse(transform);
 			const Matrix invTransp = Matrix::Transpose(inv);
 
 			transformedNormals.resize(normals.size());
 			std::transform(begin(normals), end(normals), begin(transformedNormals),
-				[invTransp](const Vector3& n) { return invTransp.TransformVector(n).Normalized(); }
+				[&invTransp](const Vector3& n) { return invTransp.TransformVector(n).Normalized(); }
 			);
 		}
 	};
