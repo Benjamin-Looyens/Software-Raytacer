@@ -3,7 +3,7 @@
 #include <SDL_mouse.h>
 #include "Math.h"
 #include "Timer.h"
-//#include <iostream>
+#include <iostream>
 
 namespace dae
 {
@@ -17,7 +17,7 @@ namespace dae
 
 		Vector3 origin{};
 		float fovAngle{ 90.f };
-		float fov{ }; // Camera is a struct, so would assume POD, but could set as private maybe?
+		float fov{ }; // NOTE : Camera is a struct, so would assume POD, but could set as private maybe?
 		bool fovDirty{ true };
 
 		float movSpeed{ 10.0f };
@@ -59,19 +59,19 @@ namespace dae
 		{
 			const float deltaTime = pTimer->GetElapsed();
 
-			// Keyboard Input
-			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
-
 			Vector3 movement{};
 			Vector3 rotation{};
 
 			bool movDirty{};
 			bool rotDirty{};
 
-			if (pKeyboardState[SDL_SCANCODE_W]) { movement += forward; movDirty = true; }
-			if (pKeyboardState[SDL_SCANCODE_S]) { movement -= forward; movDirty = true; }
-			if (pKeyboardState[SDL_SCANCODE_D]) { movement += right; movDirty = true; }
-			if (pKeyboardState[SDL_SCANCODE_A]) { movement -= right; movDirty = true; }
+			// Keyboard Input
+			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
+
+			if (pKeyboardState[SDL_SCANCODE_W] || pKeyboardState[SDL_SCANCODE_UP]) { movement += forward; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_S] || pKeyboardState[SDL_SCANCODE_DOWN]) { movement -= forward; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_D] || pKeyboardState[SDL_SCANCODE_RIGHT]) { movement += right; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_A] || pKeyboardState[SDL_SCANCODE_LEFT]) { movement -= right; movDirty = true; }
 
 			if (pKeyboardState[SDL_SCANCODE_SPACE]) { movement += Vector3::UnitY; movDirty = true; }
 			if (pKeyboardState[SDL_SCANCODE_LSHIFT]) { movement -= Vector3::UnitY; movDirty = true; }
@@ -83,7 +83,6 @@ namespace dae
 			const bool rDown = mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT);
 			const bool lDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
 
-			// NOTE : potentially could have a check for if there is keyboard input so that it does not double up, HOWEVER I normalize anyways so it should be fine
 			if (rDown && lDown) {
 				movement.y -= mouseY;
 				movDirty = true;
@@ -94,7 +93,6 @@ namespace dae
 				rotDirty = true;
 			}
 			else if (lDown) {
-				// TODO : clamp forward movement?
 				movement -= forward * static_cast<float>(mouseY);
 				rotation.y += mouseX;
 
@@ -102,29 +100,22 @@ namespace dae
 				rotDirty = true;
 			}
 
-			if (movDirty && movement.Normalize() > 0.0f) {
-				// TODO : Figure out if this would work with the LMB movement when going into the scene
+			if (movDirty && movement.Normalize() > 0.0f) { // NOTE : Ideally, the mouse movement shouldn't be normalized but making a bool just for that seems messy
 				origin += movement * movSpeed * deltaTime;
 				toWorldDirty = true;
 			}
 			if (rotDirty && rotation.Magnitude() > 0.0f) { // NOTE : In theory I could do SqrMagnitude?
 				const Vector3 scaledRotation = rotation * rotSpeed * deltaTime;
 
-				// TODO : Check if Yaw/Pitch naming is even right
 				constexpr float OFFSET = 0.05f;
 				totalYaw += scaledRotation.x;
 				totalYaw = std::clamp(totalYaw, -PI * 0.5f + OFFSET, PI * 0.5f - OFFSET);
 
 				// Ensure always positive between 0 -> 6.28...
 				totalPitch = std::fmodf(std::fmodf(scaledRotation.y + totalPitch, PI_2) + PI_2, PI_2);
-				//totalYaw =	 std::fmodf(std::fmodf(scaledRotation.x + totalYaw,	  PI_2) + PI_2, PI_2);
-
-				//std::cout << "Pitch: " << totalPitch << "\n";
-				//std::cout << "Yaw: " << totalYaw << "\n";
 
 				const Matrix fullRotMatrix = Matrix::CreateRotationX(totalYaw) * Matrix::CreateRotationY(totalPitch);
 				forward = fullRotMatrix.TransformVector(Vector3::UnitZ);
-				forward.Normalize(); // Is this necessary here?
 				toWorldDirty = true;
 			}
 		}
