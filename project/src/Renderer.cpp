@@ -68,8 +68,7 @@ void dae::Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float 
 	const float xC = ((2 * ((static_cast<float>(px) + 0.5f) / m_Width) - 1) * aspectRatio) * fov;
 	const float yC = ((1 - (2 * ((static_cast<float>(py) + 0.5f) / m_Height)))) * fov;
 
-	const Vector3 rayDir{ xC, yC, 1.0f };
-	const Vector3 rayDir_Normal = camToWorld.TransformVector(rayDir.Normalized()); // TODO : Can make RayDir and RayDir_Normal into one variable, as RayDir raw is not needed beyond this point
+	const Vector3 rayDir_Normal = camToWorld.TransformVector(Vector3(xC, yC, 1.0f).Normalized());
 
 	const Ray viewRay{ cameraOrigin, rayDir_Normal };
 	ColorRGB finalColor{ };
@@ -91,7 +90,7 @@ void dae::Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float 
 			{
 				const float observedArea = Vector3::Dot(latestHit.normal, lightDir);
 				if (observedArea <= 0.0f) continue;
-				finalColor += { observedArea, observedArea, observedArea };
+				finalColor += colors::White * observedArea;
 			}
 			break;
 			case LightingMode::Radiance:
