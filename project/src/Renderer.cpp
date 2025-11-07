@@ -69,7 +69,7 @@ void dae::Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float 
 	const float yC = ((1 - (2 * ((static_cast<float>(py) + 0.5f) / m_Height)))) * fov;
 
 	const Vector3 rayDir{ xC, yC, 1.0f };
-	const Vector3 rayDir_Normal = camToWorld.TransformVector(rayDir.Normalized()); // TODO : prob switch up the camera transform elsewhere
+	const Vector3 rayDir_Normal = camToWorld.TransformVector(rayDir.Normalized()); // TODO : Can make RayDir and RayDir_Normal into one variable, as RayDir raw is not needed beyond this point
 
 	const Ray viewRay{ cameraOrigin, rayDir_Normal };
 	ColorRGB finalColor{ };
@@ -86,25 +86,33 @@ void dae::Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float 
 
 			if (m_DoShadows && pScene->DoesHit(lightRay)) continue;
 
-			const float observedArea = std::clamp(Vector3::Dot(latestHit.normal, lightDir), FLT_MIN, 1.0f);
-			if (observedArea < 0.0f) continue;
-
 			switch (m_CurMode) {
 			case LightingMode::ObservedArea:
+			{
+				const float observedArea = Vector3::Dot(latestHit.normal, lightDir);
+				if (observedArea <= 0.0f) continue;
 				finalColor += { observedArea, observedArea, observedArea };
-				break;
+			}
+			break;
 			case LightingMode::Radiance:
-				// TODO : Fix the fact that there still seems to be some sort of shadows on the spheres themselves even with shadows off
 				finalColor += LightUtils::GetRadiance(light, latestHit.origin);
 				break;
 			case LightingMode::BRDF:
-				// TODO : Fix the rendering on bottom spheres (look at slides)
+			{
+				const float observedArea = Vector3::Dot(latestHit.normal, lightDir);
+				if (observedArea <= 0.0f) continue;
 				finalColor += materials[latestHit.materialIndex]->Shade(latestHit, lightDir, -viewRay.direction);
 				break;
+			}
 			case LightingMode::Combined:
+			{
+				const float observedArea = Vector3::Dot(latestHit.normal, lightDir);
+				if (observedArea <= 0.0f) continue;
+
 				finalColor += materials[latestHit.materialIndex]->Shade(latestHit, lightDir, -viewRay.direction) *
 					LightUtils::GetRadiance(light, latestHit.origin) *
 					observedArea;
+			}
 				break;
 			}
 		}

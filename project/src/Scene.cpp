@@ -323,12 +323,12 @@ namespace dae {
 		AddPlane({ -5.0f,  0.0f,  0.0f }, {  1.0f,  0.0f,  0.0f }, matLambert_GrayBlue); // Left
 
 		// Spheres
-		AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matCT_GrayRoughMetal);
-		AddSphere({  0.00f, 1.0f, 0.0f }, 0.75f, matCT_GrayMediumMetal);
-		AddSphere({  1.75f, 1.0f, 0.0f }, 0.75f, matCT_GraySmoothetal);
-		AddSphere({ -1.75f, 3.0f, 0.0f }, 0.75f, matCT_GrayRoughPlastic);
-		AddSphere({  0.00f, 3.0f, 0.0f }, 0.75f, matCT_GrayMediumPlastic);
-		AddSphere({  1.75f, 3.0f, 0.0f }, 0.75f, matCT_GraySmoothPlastic);
+		AddSphere({ -1.75f, 1.0f, 0.0f }, 0.75f, matCT_GrayRoughMetal);		// TL
+		AddSphere({  0.00f, 1.0f, 0.0f }, 0.75f, matCT_GrayMediumMetal);	// TM
+		AddSphere({  1.75f, 1.0f, 0.0f }, 0.75f, matCT_GraySmoothetal);		// TR
+		AddSphere({ -1.75f, 3.0f, 0.0f }, 0.75f, matCT_GrayRoughPlastic);	// BL
+		AddSphere({  0.00f, 3.0f, 0.0f }, 0.75f, matCT_GrayMediumPlastic);	// BM
+		AddSphere({  1.75f, 3.0f, 0.0f }, 0.75f, matCT_GraySmoothPlastic);	// BR
 
 		// Triangles
 		const Triangle baseTriangle = { Vector3{ -0.75f, 1.5f, 0.0f }, Vector3{ 0.75f, 0.0f, 0.0f }, Vector3{ -0.75f, 0.0f, 0.0f } };
@@ -355,6 +355,8 @@ namespace dae {
 		AddPointLight({  0.0f, 5.0f,  5.0f }, 50.0f, { 1.00f, 0.61f, 0.45f }); // Backlight
 		AddPointLight({ -2.5f, 5.0f, -5.0f }, 70.0f, { 1.00f, 0.80f, 0.45f }); // Frontlight left
 		AddPointLight({  2.5f, 2.5f, -5.0f }, 50.0f, { 0.34f, 0.47f, 0.68f });
+
+		m_DoRot = false;
 	}
 
 	void Scene_W4_Reference::Update(dae::Timer* pTimer)
