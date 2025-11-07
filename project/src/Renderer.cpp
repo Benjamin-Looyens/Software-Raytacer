@@ -78,8 +78,7 @@ void dae::Renderer::RenderPixel(const Scene* pScene, uint32_t pixelIndex, float 
 
 	if (latestHit.didHit) {
 		for (const Light& light : lights) {
-			// TODO : Point vs directional light difference?
-			Vector3 lightDir = light.origin - latestHit.origin;
+			Vector3 lightDir = LightUtils::GetDirectionToLight(light, latestHit.origin);
 			const float lightMagnitude = lightDir.Normalize();
 			const Ray lightRay{ latestHit.origin, lightDir, 0.001f, lightMagnitude };
 
