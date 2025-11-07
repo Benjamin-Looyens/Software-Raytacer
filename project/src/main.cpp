@@ -72,7 +72,7 @@ int main(int argc, char* args[])
 	bool takeScreenshot = false;
 	while (isLooping)
 	{
-		const auto& pCurScene = dynamic_cast<RotatingMeshScene*>(pScenes[curSceneIdx]);
+		const auto& pCurScene = pScenes[curSceneIdx];
 
 		//--------- Get input events ---------
 		SDL_Event e;
@@ -92,8 +92,12 @@ int main(int argc, char* args[])
 					pRenderer->CycleLightingMode();
 				if (e.key.keysym.scancode == SDL_SCANCODE_Z)
 					curSceneIdx = (curSceneIdx + 1) % pScenes.size();
-				if (e.key.keysym.scancode == SDL_SCANCODE_R)
-					pCurScene->ToggleRotation();
+				if (e.key.keysym.scancode == SDL_SCANCODE_R) {
+					for (Scene* pScene : pScenes) {
+						const auto& pRotScene = dynamic_cast<RotatingMeshScene*>(pScene);
+						pRotScene->ToggleRotation();
+					}
+				}
 				break;
 			}
 		}
