@@ -20,39 +20,26 @@ namespace dae
 			const float discriminant = (b * b) - 4 * (a * c);
 
 			if (discriminant > 0) {
-				// TODO : Double check the intersection point & t
-				const float sqrtDiscriminant = sqrtf(discriminant);
-				const float t0 = (-b - sqrtDiscriminant) / (2 * a);
-
-				// I kinda hate how this reads but yea
-				bool withinBoundaries{ false };
-				if (t0 > ray.min) {
-					if (t0 < ray.max) {
-						if (!ignoreHitRecord) {
-							curHit.t = t0;
-							curHit.origin = ray.origin + (t0 * ray.direction);
-						}
-						withinBoundaries = true;
-					}
-				}
-				else {
-					const float t1 = (-b + sqrtDiscriminant) / (2 * a);
-					if (t1 > ray.min && t1 < ray.max) {
-						if (!ignoreHitRecord) {
-							curHit.t = t1;
-							curHit.origin = ray.origin + (t1 * ray.direction);
-						}
-						withinBoundaries = true;
-					}
-				}
-
-				if (withinBoundaries) {
+				// Update Lambda (to prevent identical code)
+				const auto updateHitRecord = [&](float t) {
+					if (t < ray.min || t > ray.max) return false;
 					if (!ignoreHitRecord) {
+						curHit.t = t;
+						curHit.origin = ray.origin + t * ray.direction;
 						curHit.didHit = true;
 						curHit.materialIndex = sphere.materialIndex;
 						curHit.normal = (curHit.origin - sphere.origin).Normalized();
 					}
 					return true;
+					};
+
+				const float sqrtDiscriminant = sqrtf(discriminant);
+				const float t0 = (-b - sqrtDiscriminant) / (2 * a);
+
+				if (updateHitRecord(t0)) return true;
+				else {
+					const float t1 = (-b + sqrtDiscriminant) / (2 * a);
+					return updateHitRecord(t1);
 				}
 			}
 
