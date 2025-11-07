@@ -86,8 +86,7 @@ namespace dae
 			const Vector3 a = triangle.v1 - triangle.v0;
 			const Vector3 b = triangle.v2 - triangle.v0;
 			
-			float backFront = Vector3::Dot(triangle.normal, ray.direction);
-			if (ignoreHitRecord) backFront = -backFront; // Potentially some way to collapse into the backFront initialization, so that I can make it const
+			const float backFront = Vector3::Dot(triangle.normal, ray.direction) * (1 - (2 * ignoreHitRecord));
 			
 			if (AreEqual(backFront, 0.0f)) return false;
 			else if (backFront > 0.0f) {
@@ -142,7 +141,6 @@ namespace dae
 
 			float tmin = std::min(tx1, tx2);
 			float tmax = std::max(tx1, tx2);
-			if (tmax < tmin) return false;
 
 			float ty1 = (mesh.transformedMin.y - ray.origin.y) / ray.direction.y;
 			float ty2 = (mesh.transformedMax.y - ray.origin.y) / ray.direction.y;
