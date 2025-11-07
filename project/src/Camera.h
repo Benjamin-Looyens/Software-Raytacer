@@ -85,6 +85,7 @@ namespace dae
 
 			if (rDown && lDown) {
 				movement.y -= mouseY;
+				movement.x += mouseX;
 				movDirty = true;
 			}
 			else if (rDown) {
