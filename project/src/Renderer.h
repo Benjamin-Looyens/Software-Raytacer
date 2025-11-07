@@ -34,9 +34,9 @@ namespace dae
 			Radiance,
 			BRDF,
 			Combined,
+
 			ModeAmount
 		};
-
 
 		SDL_Window* m_pWindow{};
 
