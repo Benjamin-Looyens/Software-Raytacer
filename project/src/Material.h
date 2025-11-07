@@ -103,17 +103,14 @@ namespace dae
 			ColorRGB f0 = m_Albedo;
 			if (m_Metalness == 0.0f) f0 = { 0.04f, 0.04f, 0.04f };
 
-			const Vector3 vPlusL = v + l;
-			const Vector3 h = vPlusL / vPlusL.Magnitude();
-			const Vector3 h_Normal = h.Normalized();
+			const Vector3 h = (v + l).Normalized();
 
-			const ColorRGB F = BRDF::FresnelFunction_Schlick(h_Normal, v, f0);
-			const float D = BRDF::NormalDistribution_GGX(hitRecord.normal, h_Normal, m_Roughness);
+			const ColorRGB F = BRDF::FresnelFunction_Schlick(h, v, f0);
+			const float D = BRDF::NormalDistribution_GGX(hitRecord.normal, h, m_Roughness);
 			const float G = BRDF::GeometryFunction_Smith(hitRecord.normal, v, l, m_Roughness);
 
-			constexpr ColorRGB oneColor = { 1.0f, 1.0f, 1.0f };
 			const ColorRGB specular = (D * F * G) / (4 * Vector3::Dot(v, hitRecord.normal) * Vector3::Dot(l, hitRecord.normal));
-			const ColorRGB kd = oneColor - F;
+			const ColorRGB kd = colors::White - F;
 			const ColorRGB diffuse = BRDF::Lambert(kd, m_Albedo);
 
 			return diffuse + specular;
