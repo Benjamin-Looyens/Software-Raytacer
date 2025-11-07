@@ -361,7 +361,10 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
-		const float yawAngle = (cos(pTimer->GetTotal()) + 1.0f) / 2.0f * PI_2;
+		if (!m_DoRot) return;
+
+		m_RotCounter += std::fmod(pTimer->GetElapsed(), PI_2);
+		const float yawAngle = (cos(m_RotCounter) + 1.0f) / 2.0f * PI_2;
 		for (const auto pMesh : m_pMeshes) {
 			pMesh->RotateY(yawAngle);
 			pMesh->UpdateTransforms();
@@ -407,9 +410,10 @@ namespace dae {
 	{
 		Scene::Update(pTimer);
 
-		//const float yawAngle = PI_DIV_2 * pTimer->GetTotal();
-		const float yawAngle = (cos(pTimer->GetTotal()) + 1.0f) / 2.0f * PI_2;
-		
+		if (!m_DoRot) return;
+		m_RotCounter += std::fmod(pTimer->GetElapsed(), PI_2);
+		const float yawAngle = (cos(m_RotCounter) + 1.0f) / 2.0f * PI_2;
+
 		m_pMesh->RotateY(yawAngle);
 		m_pMesh->UpdateTransforms();
 	}

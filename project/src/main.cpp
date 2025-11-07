@@ -41,7 +41,7 @@ int main(int argc, char* args[])
 	const uint32_t height = 480;
 
 	SDL_Window* pWindow = SDL_CreateWindow(
-		"RayTracer - **Benjamin Looyens**",
+		"RayTracer - **Benjamin Looyens 2DAE11**",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
 		width, height, 0);
@@ -72,6 +72,8 @@ int main(int argc, char* args[])
 	bool takeScreenshot = false;
 	while (isLooping)
 	{
+		const auto& pCurScene = dynamic_cast<RotatingMeshScene*>(pScenes[curSceneIdx]);
+
 		//--------- Get input events ---------
 		SDL_Event e;
 		while (SDL_PollEvent(&e))
@@ -90,11 +92,11 @@ int main(int argc, char* args[])
 					pRenderer->CycleLightingMode();
 				if (e.key.keysym.scancode == SDL_SCANCODE_Z)
 					curSceneIdx = (curSceneIdx + 1) % pScenes.size();
+				if (e.key.keysym.scancode == SDL_SCANCODE_R)
+					pCurScene->ToggleRotation();
 				break;
 			}
 		}
-
-		const auto& pCurScene = pScenes[curSceneIdx];
 
 		//--------- Update ---------
 		pCurScene->Update(pTimer);

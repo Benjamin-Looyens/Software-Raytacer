@@ -3,7 +3,6 @@
 #include <SDL_mouse.h>
 #include "Math.h"
 #include "Timer.h"
-#include <iostream>
 
 namespace dae
 {

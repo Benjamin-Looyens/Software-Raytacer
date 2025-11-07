@@ -62,6 +62,12 @@ namespace dae
 
 	};
 
+	class RotatingMeshScene : public Scene
+	{
+	public:
+		virtual void ToggleRotation() = 0;
+	};
+
 	//+++++++++++++++++++++++++++++++++++++++++
 	//WEEK 1 Test Scene
 	class Scene_W1 final : public Scene
@@ -148,7 +154,7 @@ namespace dae
 
 	//+++++++++++++++++++++++++++++++++++++++++
 	//WEEK 4 Reference Scene
-	class Scene_W4_Reference final : public Scene
+	class Scene_W4_Reference final : public RotatingMeshScene
 	{
 	public:
 		Scene_W4_Reference() = default;
@@ -162,13 +168,17 @@ namespace dae
 		void Initialize() override;
 		void Update(dae::Timer* pTimer) override;
 
+		void ToggleRotation() { m_DoRot = !m_DoRot; }
+
 	private:
 		TriangleMesh* m_pMeshes[3]{};
+		float m_RotCounter = 0.0f;
+		bool m_DoRot{ true };
 	};
 
 	//+++++++++++++++++++++++++++++++++++++++++
 	//WEEK 4 Bunny Scene
-	class Scene_W4_Bunny final : public Scene
+	class Scene_W4_Bunny final : public RotatingMeshScene
 	{
 	public:
 		Scene_W4_Bunny() = default;
@@ -182,7 +192,11 @@ namespace dae
 		void Initialize() override;
 		void Update(dae::Timer* pTimer) override;
 
+		void ToggleRotation() { m_DoRot = !m_DoRot; }
+
 	private:
 		TriangleMesh* m_pMesh;
+		float m_RotCounter = 0.0f;
+		bool m_DoRot{ true };
 	};
 }
