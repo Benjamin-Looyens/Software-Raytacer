@@ -204,6 +204,8 @@ namespace dae
 				return light.origin - origin;
 				break;
 			}
+
+			return Vector3::UnitX;
 		}
 
 		inline ColorRGB GetRadiance(const Light& light, const Vector3& target)

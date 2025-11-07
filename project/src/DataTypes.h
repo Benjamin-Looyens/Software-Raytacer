@@ -204,10 +204,6 @@ namespace dae
 
 		void UpdateTransforms()
 		{
-			// TODO: Check semantics between std::emplace_back & stuff
-			// Slides say:
-			// Make sure you’re code is ‘optimized’, make use of vector::reserve & vector::emplace_back
-
 			// Calculate Final Transform 
 			const Matrix transform = scaleTransform * rotationTransform * translationTransform;
 

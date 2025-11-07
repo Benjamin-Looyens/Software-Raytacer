@@ -195,7 +195,7 @@ namespace dae
 		void ToggleRotation() { m_DoRot = !m_DoRot; }
 
 	private:
-		TriangleMesh* m_pMesh;
+		TriangleMesh* m_pMesh{ nullptr };
 		float m_RotCounter = 0.0f;
 		bool m_DoRot{ true };
 	};
