@@ -20,7 +20,8 @@ namespace dae
 		bool fovDirty{ true };
 
 		float movSpeed{ 10.0f };
-		float rotSpeed{ 0.2f };
+		float panSpeed{ 0.25f };
+		float rotSpeed{ 0.0075f };
 
 		Vector3 forward{ Vector3::UnitZ };
 		Vector3 up{ Vector3::UnitY };
@@ -58,22 +59,25 @@ namespace dae
 		{
 			const float deltaTime = pTimer->GetElapsed();
 
-			Vector3 movement{};
+			Vector3 movementMouse{};
+			Vector3 movementKeyboard{};
 			Vector3 rotation{};
 
 			bool movDirty{};
 			bool rotDirty{};
+			float sprintModifier{ 1.0f };
 
 			// Keyboard Input
 			const uint8_t* pKeyboardState = SDL_GetKeyboardState(nullptr);
 
-			if (pKeyboardState[SDL_SCANCODE_W] || pKeyboardState[SDL_SCANCODE_UP]) { movement += forward; movDirty = true; }
-			if (pKeyboardState[SDL_SCANCODE_S] || pKeyboardState[SDL_SCANCODE_DOWN]) { movement -= forward; movDirty = true; }
-			if (pKeyboardState[SDL_SCANCODE_D] || pKeyboardState[SDL_SCANCODE_RIGHT]) { movement += right; movDirty = true; }
-			if (pKeyboardState[SDL_SCANCODE_A] || pKeyboardState[SDL_SCANCODE_LEFT]) { movement -= right; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_W] || pKeyboardState[SDL_SCANCODE_UP]) { movementKeyboard += forward; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_S] || pKeyboardState[SDL_SCANCODE_DOWN]) { movementKeyboard -= forward; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_D] || pKeyboardState[SDL_SCANCODE_RIGHT]) { movementKeyboard += right; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_A] || pKeyboardState[SDL_SCANCODE_LEFT]) { movementKeyboard -= right; movDirty = true; }
 
-			if (pKeyboardState[SDL_SCANCODE_SPACE]) { movement += Vector3::UnitY; movDirty = true; }
-			if (pKeyboardState[SDL_SCANCODE_LSHIFT]) { movement -= Vector3::UnitY; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_SPACE] || pKeyboardState[SDL_SCANCODE_E]) { movementKeyboard += Vector3::UnitY; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_LCTRL] || pKeyboardState[SDL_SCANCODE_Q]) { movementKeyboard -= Vector3::UnitY; movDirty = true; }
+			if (pKeyboardState[SDL_SCANCODE_LSHIFT]) sprintModifier = 2.0f;
 
 			// Mouse Input
 			int mouseX{}, mouseY{};
@@ -83,29 +87,30 @@ namespace dae
 			const bool lDown = mouseState & SDL_BUTTON(SDL_BUTTON_LEFT);
 
 			if (rDown && lDown) {
-				movement.y -= mouseY;
-				movement.x += mouseX;
+				movementMouse.y -= mouseY;
+				movementMouse += right * static_cast<float>(mouseX);
 				movDirty = true;
 			}
 			else if (rDown) {
 				rotation.y += mouseX;
-				rotation.x -= mouseY; 
+				rotation.x -= mouseY;
 				rotDirty = true;
 			}
 			else if (lDown) {
-				movement -= forward * static_cast<float>(mouseY);
+				movementMouse -= forward * static_cast<float>(mouseY);
 				rotation.y += mouseX;
 
 				movDirty = true;
 				rotDirty = true;
 			}
 
-			if (movDirty && movement.Normalize() > 0.0f) { // NOTE : Ideally, the mouse movement shouldn't be normalized but making a bool just for that seems messy
-				origin += movement * movSpeed * deltaTime;
+			if (movDirty) {
+				if (movementKeyboard.Normalize() > 0.0f) origin += movementKeyboard * movSpeed * deltaTime * sprintModifier;
+				if (movementMouse.SqrMagnitude() > 0.0f) origin += movementMouse * panSpeed;
 				toWorldDirty = true;
 			}
-			if (rotDirty && rotation.Magnitude() > 0.0f) { // NOTE : In theory I could do SqrMagnitude?
-				const Vector3 scaledRotation = rotation * rotSpeed * deltaTime;
+			if (rotDirty && rotation.SqrMagnitude() > 0.0f) {
+				const Vector3 scaledRotation = rotation * rotSpeed;
 
 				constexpr float OFFSET = 0.05f;
 				totalYaw += scaledRotation.x;
