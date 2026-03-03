@@ -95,7 +95,7 @@ int main(int argc, char* args[])
 				if (e.key.keysym.scancode == SDL_SCANCODE_R) {
 					for (Scene* pScene : pScenes) {
 						const auto& pRotScene = dynamic_cast<RotatingMeshScene*>(pScene);
-						pRotScene->ToggleRotation();
+						if (pRotScene) pRotScene->ToggleRotation();
 					}
 				}
 				break;
